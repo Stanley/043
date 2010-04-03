@@ -3,18 +3,86 @@
   <head>
     <meta charset="utf-8"> 
     <title>MSER Demo</title>
+
+    <style>
+    
+      .container{
+        position: relative
+      }
+      .mser{
+        position: absolute;
+        top: 0;
+        left: 420px;
+      }
+
+      .mser:active{
+        left: 0
+      }
+
+      #settings{
+        margin: 20px auto;
+        text-align: center
+      }
+
+    </style>
   </head>
   <body>
     <h1>Maximally stable extremal regions demo</h1>
 
-    <canvas id="canvas" width="480" height="320"></canvas>
-    <canvas id="regions" width="480" height="320"></canvas>
-    <canvas id="mser" width="480" height="320" style="border:1px red solid"></canvas>
-    <a href="javascript:window.benchmark()">start</a>
-    <br />
-    <script type="application/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-    <script type="application/javascript" src="../javascripts/mser.js"></script>
+    <div id="settings">
+      <h3>Settings</h3>
+      Delta: <input type="text" id="delta" value="10" />
+      Minimum: <input type="text" id="min" value="30" />
+      Maximum: <input type="text" id="max" value="500" />
+      Images: <select name="set" id="set"><option label="viewpoint" value="graf"><option label="blur" value="bikes"><option label="zoom+rotation" value="boat"><option label="light" value="leuven"><option label="compression" value="ubc"></select>
+      <br />
+      <input type="button" id="update" value="Update" />
+    </div>
 
+    <div class="container">
+      <canvas id="canvas1" width="400" height="320"></canvas>
+      <canvas class="mser" id="mser1" width="400" height="320"></canvas>
+    </div>
+    Time: <span id="time1">...</span> ms, 
+    Regions: <span id="count1">...</span><br />
+
+    <div class="container">
+      <canvas id="canvas2" width="400" height="320"></canvas>
+      <canvas class="mser" id="mser2" width="400" height="320"></canvas>
+    </div>
+    Time: <span id="time2">...</span> ms, 
+    Regions: <span id="count2">...</span><br />
+
+    <div class="container">
+      <canvas id="canvas3" width="400" height="320"></canvas>
+      <canvas class="mser" id="mser3" width="400" height="320"></canvas>
+    </div>
+    Time: <span id="time3">...</span> ms, 
+    Regions: <span id="count3">...</span><br />
+
+    <div class="container">
+      <canvas id="canvas4" width="400" height="320"></canvas>
+      <canvas class="mser" id="mser4" width="400" height="320"></canvas>
+    </div>
+    Time: <span id="time4">...</span> ms<br />
+
+    <div class="container">
+      <canvas id="canvas5" width="400" height="320"></canvas>
+      <canvas class="mser" id="mser5" width="400" height="320"></canvas>
+    </div>
+    Time: <span id="time5">...</span> ms<br />
+
+    <div class="container">
+      <canvas id="canvas6" width="400" height="320"></canvas>
+      <canvas class="mser" id="mser6" width="400" height="320"></canvas>
+    </div>
+    Time: <span id="time6">...</span> ms<br />
+
+    <a href="javascript:window.benchmark()">Benchmark</a>
+    <br />
+    <script type="application/javascript" src="/ogor/javascripts/jquery.min.js"></script>
+    <script type="application/javascript" src="/ogor/javascripts/array.js"></script>
+    <script type="application/javascript" src="/ogor/javascripts/mser.js"></script>
   </body>
 </html>
 
