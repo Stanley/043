@@ -26,7 +26,7 @@ function main(){
 
     $(img)
       .load(mser)
-      .attr('src', '/ogor/demo/images/'+set+'/img'+i+'.png')
+      .attr('src', 'images/'+set+'/img'+i+'.png')
   }
 }
 
