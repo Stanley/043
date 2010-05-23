@@ -1,59 +1,24 @@
-var width = 400 //canvas.width
-var height = 320 //canvas.height
-var resolution = width*height
-
-// MSER parameters
-var delta = 10
-var minimum = 40  // The smallest mser
-var maximum = 500 // The biggest mser
-
-$(document).ready(function() {
-  $("#update").click(function(){
-    main()
-  })
-})
-
-function main(){
-
-  delta = parseInt($("#delta").attr("value"))
-  minimum = parseInt($("#min").attr("value"))
-  maximum = parseInt($("#max").attr("value"))
-  set = $("#set").attr("value")
-
-  for(var i=1; i<7; i++){
-    var img = new Image(width, height)
-    img.rel = i
-
-    $(img)
-      .load(mser)
-      .attr('src', 'images/'+set+'/img'+i+'.png')
-  }
-}
-
 function mser(){
 
   var currentTime = (new Date()).getTime()
 
   // Get the CanvasPixelArray from the given coordinates and dimensions.
-  var canvas = document.getElementById("canvas" + this.rel)
+  var canvas = document.createElement('canvas')
+  canvas.height = height
+  canvas.width = width
+  
+  var li = $(document.createElement('li'))
+  li.append(canvas)
+  
   var context = canvas.getContext('2d')
   context.drawImage(this, 0, 0)
 
-  try {
-    var imgd = context.getImageData(0, 0, width, height)
-  } catch(e) {
-//      netscape.security.PrivilegeManager.enablePrivilege("UniversalBrowserRead")
-    var imgd = context.getImageData(0, 0, width, height)
-  }
+  var imgd = context.getImageData(0, 0, width, height)
 
   var pix = imgd.data
   var hist = []  
 
   // Intensity table
-//  for(var i=0; i<256; i++){
-//    hist[i] = []
-//  }
-
   var i=256
   do {
     hist.push([])
@@ -250,27 +215,39 @@ function mser(){
     })
   } while(i--)
 
-  $("#time"+this.rel).text( (new Date()).getTime() - currentTime )
-  $("#count"+this.rel).text( Object.size(mser) )
+//  $("#time"+this.rel).text( (new Date()).getTime() - currentTime )
+  //$("#count"+this.rel).text( Object.size(mser) )
+  
+  var info = $(document.createElement('div'))
+  info.addClass("info")
+  info.html("<b>" + Object.size(mser) + "</b> obszarów mser. Czasy:<br />znalezienia: " + ((new Date()).getTime() - currentTime) + " ms (?? ms)<br />neutralizacji: ?? ms (?? ms)<br /><span class='sum'>+ ?? ms (?? ms)</span>" )
 
-  console.log(mser)
+  imgs.append(li.append(info))
+
+  // console.log(mser)
 
   // Draw the ImageData at the given (x,y) coordinates.
 
-  var regions = document.getElementById("mser"+this.rel)
+  var layers = document.createElement('div')
+  layers.className = 'layers'
+
+  var regions = document.createElement('canvas')
+  regions.height = height
+  regions.width = width
+  
   var regions_context = regions.getContext('2d')
   var canvasData = regions_context.createImageData(width, height)
 
   $.each(mser, function(key, size){
 
-    var pix = key
-    var regionSize = 1 - regionMap[regionMap.find_reference_point(key)]
+    var pos = key
+//    var regionSize = 1 - regionMap[regionMap.find_reference_point(key)]
 
     while(size--){
 
 //      if(roadMap[pix] == pix || roadMap[pix] == undefined) throw "RoadMap error"
 
-      var i = pix*4
+      var i = pos*4
       var gray = parseInt( key * ( 0xffffff / (resolution) ) )
       r = (gray & 0xff0000) >> 16
       g = (gray & 0x00ff00) >> 8
@@ -281,8 +258,145 @@ function mser(){
       canvasData.data[i+2] = b
       canvasData.data[i+3] = 255
       
-      pix = roadMap[pix]
+      pos = roadMap[pos]
     }
   })
   regions_context.putImageData(canvasData, 0, 0)
+  $(layers).append(regions)
+  
+  // Ellipses
+  var ellipses = document.createElement('canvas')
+  ellipses.height = height
+  ellipses.width = width
+  
+  var regions_context = ellipses.getContext('2d')
+  var canvasData = regions_context.createImageData(width, height)
+
+  $.each(mser, function(key, size){
+
+    // Finding center of mass
+    var pos = key
+    var count = size
+    var x_sum = 0, y_sum = 0
+
+    while(count--){
+      
+      x_sum += pos%width
+      y_sum += Math.floor(pos/width)
+                  
+      pos = roadMap[pos]
+    }
+    
+    var x = Math.round(x_sum / size)
+    var y = Math.round(y_sum / size)
+    
+    var i = 4*(x + y*width)
+    canvasData.data[i]   = 255
+    canvasData.data[i+1] = 0
+    canvasData.data[i+2] = 0
+    canvasData.data[i+3] = 255
+    
+    // Ellipse semi-major and semi-minor axis
+    var pos = key
+    var count = size
+    var a11 = 0, a21 = 0, a22 = 0
+
+    while(count--){
+      a11 += Math.pow(Math.floor(pos/width) - y, 2)
+      a22 += Math.pow(pos%width - x, 2)
+      a21 += (Math.floor(pos/width) - y)*(pos%width - x)
+      
+      pos = roadMap[pos]
+    }
+
+    a11 /= size
+    a21 /= size
+    a22 /= size
+
+//   console.log([a11,a22,a21])
+
+    var d1 = 2*Math.round( Math.sqrt( (a11+a22) / 2 + Math.sqrt(Math.pow(a11-a22,2) + 4*a21*a21 )/2) )            //Math.round(a11)
+    var d2 = 2*Math.round( Math.sqrt( (a11+a22) / 2 - Math.sqrt(Math.pow(a11-a22,2) + 4*a21*a21 )/2) )           //Math.round(a22 - Math.pow(l21, 2) * d1)
+    
+    var sin_a = Math.sqrt( Math.pow(a21,2) / (Math.pow(a21,2) + Math.pow(a22-d1,2)) )
+    var cos_a = -sin_a*((a22-d1) / a21)
+ 
+    // console.log([d1,d2], [Math.asin(_x), Math.acos(_y)])
+
+    var beta
+    
+if(sin_a > 0 && cos_a > 0)
+  beta = -Math.asin(Math.abs(sin_a))
+else
+  beta = Math.PI + Math.asin(Math.abs(sin_a))
+
+console.log(beta)
+    
+    
+  // Drawing ellipse  
+  var steps = 360;
+ 
+  // Angle is given by Degree Value
+//  var beta = -angle * (Math.PI / 180); //(Math.PI/180) converts Degree Value into Radians
+
+  var sinbeta = Math.sin(beta);
+  var cosbeta = Math.cos(beta);
+  var a = d1
+  var b = d2
+ 
+  for (var i = 0; i < 360; i += 360 / steps) 
+  {
+    var alpha = i * (Math.PI / 180) ;
+    var sinalpha = Math.sin(alpha);
+    var cosalpha = Math.cos(alpha);
+ 
+    var X = x + (a * cosalpha * cosbeta - b * sinalpha * sinbeta);
+    var Y = y + (a * cosalpha * sinbeta + b * sinalpha * cosbeta);
+    
+      var j = 4*(Math.round(X) + Math.round(Y)*width)
+      canvasData.data[j]   = 0
+      canvasData.data[j+1] = 0
+      canvasData.data[j+2] = 0
+      canvasData.data[j+3] = 255
+    
+   }
+    
+    
+    
+//    var j=i,k=i
+//    while(d1--){
+//      j -= 4*width
+//      canvasData.data[j]   = 255
+//      canvasData.data[j+1] = 0
+//      canvasData.data[j+2] = 0
+//      canvasData.data[j+3] = 255
+//      
+//      k += 4*width
+//      canvasData.data[k]   = 255
+//      canvasData.data[k+1] = 0
+//      canvasData.data[k+2] = 0
+//      canvasData.data[k+3] = 255      
+//    }
+//    
+//    var j=i,k=i
+//    while(d2--){
+//      j += 4
+//      canvasData.data[j]   = 255
+//      canvasData.data[j+1] = 0
+//      canvasData.data[j+2] = 0
+//      canvasData.data[j+3] = 255
+//      
+//      k -= 4
+//      canvasData.data[k]   = 255
+//      canvasData.data[k+1] = 0
+//      canvasData.data[k+2] = 0
+//      canvasData.data[k+3] = 255
+//    }    
+    
+    //console.log([d1, d2], l21)    
+  }) 
+  
+  regions_context.putImageData(canvasData, 0, 0)  
+  $(layers).append(ellipses)
+  li.append(layers)
 }

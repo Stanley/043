@@ -1,0 +1,178 @@
+input, select{
+  width: 100px
+}
+
+input[type=button]{
+  width: 100%;
+  height: 45px;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+
+h1, p{
+  margin: 20px auto;
+  width: 800px;  
+}
+
+ul{
+  list-style-type: none;
+  margin: auto;
+  padding: 0;
+  width: 800px
+}
+
+#imgs > li{
+  margin: 5px auto;
+  position: relative
+}
+
+#imgs > li:hover > canvas{
+  opacity: 0.2;
+  -webkit-transition: opacity 0.2s linear;
+}
+
+#imgs > li:active .layers canvas:last-child{
+  display: block
+}
+
+#imgs > li:active .layers canvas:first-child{
+  opacity: 0.3;
+  -webkit-transition: opacity 0.4s linear;
+}
+
+#imgs .layers{
+  position: absolute;
+  top: 0;
+  left: 0
+}
+
+#imgs .layers canvas{
+  position: absolute;
+  top: 0;
+  left: 0
+}
+
+#imgs .layers canvas:last-child{
+  display: none
+}
+
+.info{
+  position:absolute;
+  right:10px;
+  top:10px;
+  text-align: right
+}
+
+.sum{
+  text-decoration: overline
+}
+
+#steps{
+  margin:20px; 
+  text-align:center
+}
+
+.ribbon-holder {
+  position: absolute;
+  top: 0;
+  overflow: hidden;
+  height: 10em;
+}
+
+.right.ribbon-holder {
+  right: 0;
+}
+
+.ribbon,
+.ribbon:hover {
+  text-decoration: none;
+}
+
+.ribbon {
+
+  letter-spacing: -.1px;
+  opacity: 0.95;
+
+  padding: 0.25em 0;
+  position: relative;
+  top: 2.5em;
+
+  /* Defaults friendly for white pages. */
+  -moz-box-shadow: 0 0 13px #888;
+  -webkit-box-shadow: 0 0 13px #888;
+  color: #FFF;
+  display: block;
+  line-height: 1.35em;
+}
+
+.ribbon .text {
+  padding: 0.35em 3em;
+  font: bold 81.25% 'Helvetiva Neue', Helvetica, Arial, sans-serif;
+}
+
+.right .ribbon {
+  -moz-transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+  right: -2.6em;
+}
+
+.darkblue.ribbon {
+  background-color: #121621;
+  color: #ecedee;
+}
+
+.darkblue.ribbon .text {
+  border: 1px solid #53565e;
+}
+
+.container{
+  position: relative
+}
+.mser{
+  position: absolute;
+  top: 0;
+  left: 420px;
+}
+
+.mser:active{
+  left: 0
+}
+
+.step{
+  width: 400px;
+  height: 270px;
+  border: 1px #666 solid;
+  display: inline-block;
+  vertical-align: top;
+  position: relative;
+  padding-top: 20px;
+  margin-top: 20px
+}
+
+.step h3{
+  font-size: 30px;
+  position: absolute;
+  top: -20px;
+  left: 5px;
+  margin: 0px;
+  display: inline;
+  background-color: #fff;
+  padding: 0 10px
+}
+
+.step table{
+  margin: auto;
+}
+
+.step table td{
+  padding: 5px 10px
+}
+
+.step table td:first-child{
+  text-align: right
+}
+
+.disabled, .disabled input{
+  color: #bbb
+}

@@ -1,88 +1,107 @@
 <!DOCTYPE html> 
 <html lang="en">
   <head>
-    <meta charset="utf-8"> 
     <title>MSER Demo</title>
-
-    <style>
-    
-      .container{
-        position: relative
-      }
-      .mser{
-        position: absolute;
-        top: 0;
-        left: 420px;
-      }
-
-      .mser:active{
-        left: 0
-      }
-
-      #settings{
-        margin: 20px auto;
-        text-align: center
-      }
-
-    </style>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />    
+    <link rel="stylesheet" type="text/css" href="style.css" />
   </head>
   <body>
+
+    <div class="right ribbon-holder">
+      <a href="http://github.com/Stanley/043" class="darkblue ribbon">
+        <span class="text">Fork me on GitHub</span>
+      </a>
+    </div>
+    
     <h1>Maximally stable extremal regions demo</h1>
+    <p>
+      This is javascript implementation of MSER detector. Problem is divided into two steps. First, we need to find MSERs. We can define size of this regions (minimum and maximum) and stability parameter (brightness delta). Second, we look for local addine frames.
+    </p>
 
-    <div id="settings">
-      <h3>Settings</h3>
-      Delta: <input type="text" id="delta" value="10" />
-      Minimum: <input type="text" id="min" value="30" />
-      Maximum: <input type="text" id="max" value="500" />
-      Images: <select name="set" id="set"><option label="viewpoint" value="graf"><option label="blur" value="bikes"><option label="zoom+rotation" value="boat"><option label="light" value="leuven"><option label="compression" value="ubc"></select>
-      <br />
-      <input type="button" id="update" value="Update" />
+    <div id="steps">
+    <div class="step">
+      <h3>Step 1:</h3> 
+      <table>     
+        <tr>
+          <td>
+            Algorithm:
+          </td><td>
+            <select name="alg" id="alg">
+              <option value="minus">MSER-</option>
+              <option value="plus">MSER+</option>
+            </select>
+          </td>
+        </tr>     
+        <tr>
+          <td>
+            Delta:
+          </td><td>
+            <input type="text" id="delta" value="10" />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Minimum:
+          </td><td>
+            <input type="text" id="min" value="30" />
+          </td>
+        </tr>
+        <tr>
+          <td>            
+            Maximum:
+          </td><td>
+            <input type="text" id="max" value="500" />
+          </td>
+        </tr>
+        <tr>
+          <td>            
+            Change:
+          </td><td>
+            <select name="set" id="set">
+              <option value="graf">viewpoint</option>
+              <option value="bikes">blur</option>
+              <option value="boat">zoom+rotation</option>
+              <option value="leuven">light</option>
+              <option value="ubc">compression</option>
+              <option value="???">environment</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>            
+            Resolution:
+          </td><td>
+            <select name="res" id="res">
+              <option value="low">480x320</option>
+              <option value="high">800x600</option>
+            </select>
+          </td>
+        </tr>
+      </table>      
+      <input type="button" id="step1" value="Find!" />
     </div>
-
-    <div class="container">
-      <canvas id="canvas1" width="400" height="320"></canvas>
-      <canvas class="mser" id="mser1" width="400" height="320"></canvas>
+    
+    <div class="step disabled">
+      <h3>Step 2:</h3>      
+      <input type="button" id="step2" value="Find!" />
     </div>
-    Time: <span id="time1">...</span> ms, 
-    Regions: <span id="count1">...</span><br />
-
-    <div class="container">
-      <canvas id="canvas2" width="400" height="320"></canvas>
-      <canvas class="mser" id="mser2" width="400" height="320"></canvas>
     </div>
-    Time: <span id="time2">...</span> ms, 
-    Regions: <span id="count2">...</span><br />
+ 
+    <ul id="imgs"></ul>
 
-    <div class="container">
-      <canvas id="canvas3" width="400" height="320"></canvas>
-      <canvas class="mser" id="mser3" width="400" height="320"></canvas>
-    </div>
-    Time: <span id="time3">...</span> ms, 
-    Regions: <span id="count3">...</span><br />
+<!--    <div class="container">-->
+<!--      <canvas id="canvas1" width="400" height="320"></canvas>-->
+<!--      <canvas class="mser" id="mser1" width="400" height="320"></canvas>-->
+<!--    </div>-->
+<!--    Time: <span id="time1">...</span> ms, -->
+<!--    Regions: <span id="count1">...</span><br />-->
 
-    <div class="container">
-      <canvas id="canvas4" width="400" height="320"></canvas>
-      <canvas class="mser" id="mser4" width="400" height="320"></canvas>
-    </div>
-    Time: <span id="time4">...</span> ms<br />
-
-    <div class="container">
-      <canvas id="canvas5" width="400" height="320"></canvas>
-      <canvas class="mser" id="mser5" width="400" height="320"></canvas>
-    </div>
-    Time: <span id="time5">...</span> ms<br />
-
-    <div class="container">
-      <canvas id="canvas6" width="400" height="320"></canvas>
-      <canvas class="mser" id="mser6" width="400" height="320"></canvas>
-    </div>
-    Time: <span id="time6">...</span> ms<br />
-
-    <a href="javascript:window.benchmark()">Benchmark</a>
-    <br />
-    <script type="application/javascript" src="../javascripts/jquery.min.js"></script>
-    <script type="application/javascript" src="../javascripts/array.js"></script>
-    <script type="application/javascript" src="../javascripts/mser.js"></script>
+    <script type="application/javascript" src="javascripts/jquery.min.js"></script>
+    <script type="application/javascript" src="javascripts/jquery-ui-1.8.1.min.js"></script>
+    <script type="application/javascript" src="javascripts/demo.js"></script>    
+    
+    <script type="application/javascript" src="../../javascripts/array.js"></script>
+    <script type="application/javascript" src="../../javascripts/mser.js"></script>
   </body>
 </html>
 
