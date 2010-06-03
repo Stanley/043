@@ -43,7 +43,7 @@
           <td>
             Minimum:
           </td><td>
-            <input type="text" id="min" value="30" />
+            <input type="text" id="min" value="50" />
           </td>
         </tr>
         <tr>
@@ -82,19 +82,28 @@
     </div>
     
     <div class="step disabled">
-      <h3>Step 2:</h3>      
+      <h3>Step 2:</h3>    
+      <table>
+        <tr>
+          <td>
+            Steps (1-360):
+          </td><td>
+            <input type="text" id="steps_count" value="72" />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Acceptance level (0-100):
+          </td><td>
+            <input type="text" id="accept" value="70" />
+          </td>
+        </tr>    
+      </table>  
       <input type="button" id="step2" value="Find!" />
     </div>
     </div>
  
     <ul id="imgs"></ul>
-
-<!--    <div class="container">-->
-<!--      <canvas id="canvas1" width="400" height="320"></canvas>-->
-<!--      <canvas class="mser" id="mser1" width="400" height="320"></canvas>-->
-<!--    </div>-->
-<!--    Time: <span id="time1">...</span> ms, -->
-<!--    Regions: <span id="count1">...</span><br />-->
 
     <script type="application/javascript" src="javascripts/jquery.min.js"></script>
     <script type="application/javascript" src="javascripts/jquery-ui-1.8.1.min.js"></script>
@@ -104,5 +113,3 @@
     <script type="application/javascript" src="../../javascripts/mser.js"></script>
   </body>
 </html>
-
-
