@@ -4,9 +4,9 @@ var resolution = width*height
 var imgs = $('#imgs')
 
 // MSER parameters
-var delta = 10
-var minimum = 40  // The smallest mser
-var maximum = 500 // The biggest mser
+var delta,
+    minimum, // The smallest mser
+    maximum; // The biggest mser
 
 function main(){
 
@@ -14,6 +14,7 @@ function main(){
   minimum = parseInt($("#min").attr("value"))
   maximum = parseInt($("#max").attr("value"))
   set = $("#set").attr("value")
+  res = $("#res").attr("value")
   $("#imgs").empty()
 
   for(var i=1; i<7; i++){
@@ -69,7 +70,7 @@ function main(){
           }
         )
       })
-      .attr('src', 'images/'+set+'/img'+i+'.png')
+      .attr('src', 'images/'+set+'/'+res+'/img'+i+'.png')
   }
 }
 
