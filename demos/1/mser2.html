@@ -1,0 +1,23 @@
+<!DOCTYPE html> 
+<html lang="en"> 
+  <head> 
+    <title>MSER2 Demo</title> 
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  </head> 
+  <body> 
+    <canvas id="canvas" width="512" height="512" />
+    <script type="application/javascript" src="../../lib/mser2.js"></script>
+    <script>
+      var img = new Image(); 
+      var ctx = document.getElementById('canvas').getContext('2d');
+      img.onload = function(){
+        ctx.drawImage(img,0,0);
+        var before = new Date();
+        var out = Mser(ctx.getImageData(0,0,512,512));
+        console.log("finished in: " + (new Date - before) +"ms.");
+        console.log(out);
+      }
+      img.src = 'images/lena/lena.png';
+    </script>
+  </body>
+</head>
