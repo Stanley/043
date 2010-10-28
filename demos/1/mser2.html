@@ -5,19 +5,31 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   </head> 
   <body> 
-    <canvas id="canvas" width="512" height="512" />
+    <canvas id="canvas" width="512" height="512" ></canvas>
+    <input id="benchmark" type="button" value="benchmark" />
     <script type="application/javascript" src="../../lib/mser2.js"></script>
     <script>
       var img = new Image(); 
       var ctx = document.getElementById('canvas').getContext('2d');
       img.onload = function(){
         ctx.drawImage(img,0,0);
-        var before = new Date();
-        var out = Mser(ctx.getImageData(0,0,512,512));
-        console.log("finished in: " + (new Date - before) +"ms.");
-        console.log(out);
+        var image = ctx.getImageData(0,0,512,512);
+        // console.profile('mser');
+        var out = Mser(image);
+        // console.profileEnd('mser');
+        // alert("finished in: " + (new Date - before) +"ms.");
+         // console.log(out);
       }
       img.src = 'images/lena/lena.png';
+      var bench = document.getElementById('benchmark')
+      bench.onclick = function(){
+        var i = 10;
+        var before = new Date();
+        while(i--){
+          img.onload();
+        } 
+        alert("finished in: " + (new Date - before)/10 +"ms.");
+      }
     </script>
   </body>
 </head>
