@@ -6,21 +6,61 @@
   </head> 
   <body> 
     <canvas id="canvas" width="512" height="512" ></canvas>
+    <canvas id="baw" width="512" height="512" ></canvas>
+    <canvas id="ellipses" width="512" height="512" ></canvas>
     <input id="benchmark" type="button" value="benchmark" />
     <script type="application/javascript" src="../../lib/mser2.js"></script>
     <script>
       var img = new Image(); 
       var ctx = document.getElementById('canvas').getContext('2d');
+      var baw = document.getElementById('baw').getContext('2d');
+
       img.onload = function(){
         ctx.drawImage(img,0,0);
-        var image = ctx.getImageData(0,0,512,512);
         // console.profile('mser');
-        var out = Mser(image);
         // console.profileEnd('mser');
         // alert("finished in: " + (new Date - before) +"ms.");
-         // console.log(out);
+        var res = 512*512;
+
+        var image = ctx.getImageData(0,0,512,512);
+        var d = image.data;
+
+        var mser = Mser(image);
+        console.log(mser);
+        console.log("Znaleziono "+mser.length+" regionów")
+
+
+        var bawi =  baw.createImageData(512, 512);
+        var arr = bawi.data;
+
+        while(res--){
+          var pos = res << 2;
+          var p = Mser.toGray(d[pos], d[pos+1], d[pos+2]);
+
+          arr[pos] = p;
+          arr[pos+1] = p;
+          arr[pos+2] = p;
+          arr[pos+3] = 255;
+        }
+
+        var i = mser.length
+        while(i--){
+          var r = mser[i]
+          var sr_x = parseInt(r[1]/ r[0])
+          var sr_y = parseInt(r[2]/ r[0])*512
+          var pos = sr_x+sr_y << 2;
+
+          arr[pos] = 255;
+          arr[pos+1] = 0;
+          arr[pos+2] = 0;
+          arr[pos+3] = 255;
+        }
+        baw.putImageData(bawi, 0, 0)
       }
-      img.src = 'images/lena/lena.png';
+      img.src = 'images/img1.png';
+
+
+
       var bench = document.getElementById('benchmark')
       bench.onclick = function(){
         var i = 10;
@@ -30,6 +70,7 @@
         } 
         alert("finished in: " + (new Date - before)/10 +"ms.");
       }
+
     </script>
   </body>
 </head>
