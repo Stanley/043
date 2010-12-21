@@ -1,0 +1,108 @@
+\documentclass[a4paper,12pt,polski]{report}
+\usepackage{polski}
+\usepackage[latin2]{inputenc}
+\usepackage{qpalatin}
+
+
+
+
+\title{Badanie przekszta³ceñ geometrycznych miêdzy kadrami tej samej sceny}
+\author{Stanis³aw Wasiutyñski}
+
+\begin{document}
+\maketitle
+
+\tableofcontents
+
+\newpage
+
+
+\chapter{Wstêp}
+
+Eksponenty wzrost popularno¶ci urz±dzeñ mobilnych obserwujemy ju¿ od wielu lat.
+Do tej pory jednak, mimo ¿e wiele z nich wyposa¿one jest w kamerê cyfrow±,
+praktycznie ¿adne z nich nie by³o w stanie przetwarzaæ obrazu nawet w czasie
+zbli¿onym do rzeczywistego. To zmieni siê ju¿ nied³ugo, gdy¿ zgodnie z prawem
+Moore'a moc obliczeniowa uk³adów scalonych podwaja siê co 24 miesi±ce.  Wiele
+programistów nie chce jednak inwestowaæ zbyt du¿o energii na pisanie
+skomplikowanych algorytmów na konkretn± platformê sprzêtow±, gdy¿ udzia³y w
+rynku nawet najwiêkszych graczy, zmieniaj± siê bardzo szybko i nie sposób
+przewidzieæ która z nich da najwiêksze korzy¶ci w przysz³o¶ci. Rozwi±zania
+wieloplatformowe uznawane by³y do tej pory za zbyt wolne lub prymitywne.
+Ostatnio jednak mo¿emy zauwa¿yæ, ¿e istnieje jedna technologia aktywnie
+wspierana przez wszystkich producentów mobilnych systemów operacyjnych i jest
+ni± jêzyk programowania JavaScript oraz jêzyk znaczników HTML. Co wiêcej nowa
+specyfikacja HTML5 dostarcza element canvas, który s³u¿y przetwarzaniu obrazów
+na niskim poziomie i doskonale spe³nia wymagania mojego projektu.
+
+\section{Definicja problemu}
+
+Rozpoznawanie i ¶ledzenie obiektów to jeden z najbardziej znanych problemów
+wizji komputerowej. Mimo to temat ten ci±gle budzi emocje, gdy nowe i lepsze
+algorytmy zostaj± opublikowane. Rozwi±zania dziel± siê na dwa typy oparte na:
+modelowaniu (model-based) i analizie obrazu (appearence-based). Problemem tej
+pierwszej metody jest du¿y stopieñ skomplikowania i zawodno¶æ podstawowych
+operacji takich jak wykrywanie krawêdzi. Druga metoda zawodzi natomiast, np.
+przy zmianie konta widzenia, gdy zmieniaj± siê proporcje wymiarów.  W roku
+2002, zosta³a opublikowana publikacja opisuj±ca nowatorski algorytm eliminuj±cy
+s³abe punkty obu tych rozwi±zañ. Stepan Obdrzalek i Jiri Matas proponuj±
+³±czenie lokalnych cech obrazu (Local Affine Frames on Destinguished Regions) i
+definiuj± pojêcie MSER (Maksymalnie stabilnych regionów ekstremalnych), które
+posiadaj± wiele po¿±danych cech brakuj±cych we wcze¶niejszych rozwi±zaniach.
+Kolejnym etapem analizy obrazu jest po³±czenie charakterystycznych regionów
+(distinguished regions) w pary. Najszybszym obecnie algorytmem jest ISMatch
+opisany w "Efitient Partial Shape Matching of Outer Contours", który dostarcza
+miarê podobieñstwa dwóch konturów. Dopiero teraz, maj±c wiele obszarów obrazu
+A, wraz z odpowiadaj±cym im dok³adnie jednym obszarem obrazu B, mo¿emy obliczyæ
+¶rednie ka¿dego z mo¿liwych przekszta³ceñ afinicznych.
+
+\section{Cel pracy}
+
+Celem mojej pracy dyplomowej jest zaimplementowanie dwóch algorytmów: MSER i
+ISMatch w jêzyku JavaScript i zastosowanie ich do rozpoznania przekszta³ceñ
+geometrycznych, które zasz³y miêdzy dwoma obrazami, lub dwiema klatkami filmu.
+Przekszta³cenia afiniczne, które bêd± brane pod uwagê to: zmiana po³o¿enia
+(przesuniêcie), zmiana perspektywy (k±ta widzenia), zmiana k±ta (obrót), zmiana
+wielko¶ci obiektu (oddalenie lub przybli¿enie).
+
+\subparagraph{Algorytm MSER}: Maksymalnie stabilne regiony ekstremalne
+
+W rozdziale 2 zostanie szczegó³owo opisany zaimplementowany algorytm
+znajdywania MSER-ów. Wyja¶niê jakie cechy musi spe³niaæ zbiór pikseli obrazu,
+aby mo¿na by³o je zakwalifikowaæ do maksymalnie stabilnych ekstremów.  Podam
+ich w³a¶ciwo¶ci oraz warunki w których s± one szczególnie korzystne oraz kiedy
+zawodz±. Opiszê algorytm do znajdywania MSER-ów o liniowej z³o¿ono¶ci
+obliczeniowej.
+
+\subparagraph{Algorytm ISMatch}: pe³ne dopasowanie kszta³tów
+
+W rozdziale 3 zostanie szczegó³owo opisany, czê¶ciowo zaimplementowany,
+algorytm dopasowania konturów. Zacznê od zdefiniowania problemu i przegl±du
+istniej±cych rozwi±zañ. Wyja¶niê dlaczego algorytm ISMatch jest najlepszy do
+moich celów. Zdefiniujê niezbêdn± reprezentacjê konturu i opiszê k±towy
+deskryptor konturu, który nie dyskryminuje wiêkszo¶ci przekszta³ceñ
+geometrycznych i pozwala na odnajdywanie czê¶ciowych dopasowañ. Opiszê algorym
+dopasowañ.  Wyja¶niê dlaczego nie wszystkie cechy tego algorytmu s± niezbêdê do
+mojej pracy i w jaki sposób mo¿na go upro¶ciæ zyskuj±c na szybko¶ci wykonania.
+
+\chapter{Wydajno¶æ}
+
+W rozdziale 4 dokonam pomiarów czasu wykonywania i zu¿ycia pamiêci
+zaproponowanej implementacji na wszystkich dostêpnych mi silnikach jêzyka
+JavaScript. Testy bêd± przeprowadzone na domowym komputerze oraz na urz±dzeniu
+mobilnym.  Zbadam zale¿no¶æ przekazywanych parametrów na jako¶æ i czas
+pomiarów. Znajdê odpowied¼ na pytanie czy obecna implementacja pozwala na
+¶ledzenie obiektów w czasie rzeczywistym.
+
+Uzyskane wyniki porównam do wyników innych implementacji publikowanych w
+internecie, g³ównie o zamkniêtym kodzie w jêzykach pre-kompilowanych.
+
+Wnioski i dalsza praca
+
+W rodziale 5, podsumowuj±cym, wska¿ê mocne i s³abe punkty wykorzystanych
+algortymów. Zaproponujê praktyczne zastosowanie mojej implementacji oraz
+wyka¿ê, ¿e moja implementacja jest warto¶ciowa i z powodzeniem mo¿e zostaæ
+u¿yta w innych pracach jako gotowa biblioteka programistyczna. Postaram siê
+przewidzieæ przys³o¶æ podobnych rozwi±zañ i zaproponujê udoskonalenia mojej
+implementacji.
+\end{document}
