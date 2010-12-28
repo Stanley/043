@@ -6,8 +6,8 @@
 
 
 
-\title{Badanie przekszta³ceñ geometrycznych miêdzy kadrami tej samej sceny}
-\author{Stanis³aw Wasiutyñski}
+\title{Badanie przeksztaÅ‚ceÅ„ geometrycznych miÄ™dzy kadrami tej samej sceny}
+\author{StanisÅ‚aw WasiutyÅ„ski}
 
 \begin{document}
 \maketitle
@@ -17,92 +17,92 @@
 \newpage
 
 
-\chapter{Wstêp}
+\chapter{WstÄ™p}
 
-Eksponenty wzrost popularno¶ci urz±dzeñ mobilnych obserwujemy ju¿ od wielu lat.
-Do tej pory jednak, mimo ¿e wiele z nich wyposa¿one jest w kamerê cyfrow±,
-praktycznie ¿adne z nich nie by³o w stanie przetwarzaæ obrazu nawet w czasie
-zbli¿onym do rzeczywistego. To zmieni siê ju¿ nied³ugo, gdy¿ zgodnie z prawem
-Moore'a moc obliczeniowa uk³adów scalonych podwaja siê co 24 miesi±ce.  Wiele
-programistów nie chce jednak inwestowaæ zbyt du¿o energii na pisanie
-skomplikowanych algorytmów na konkretn± platformê sprzêtow±, gdy¿ udzia³y w
-rynku nawet najwiêkszych graczy, zmieniaj± siê bardzo szybko i nie sposób
-przewidzieæ która z nich da najwiêksze korzy¶ci w przysz³o¶ci. Rozwi±zania
-wieloplatformowe uznawane by³y do tej pory za zbyt wolne lub prymitywne.
-Ostatnio jednak mo¿emy zauwa¿yæ, ¿e istnieje jedna technologia aktywnie
-wspierana przez wszystkich producentów mobilnych systemów operacyjnych i jest
-ni± jêzyk programowania JavaScript oraz jêzyk znaczników HTML. Co wiêcej nowa
-specyfikacja HTML5 dostarcza element canvas, który s³u¿y przetwarzaniu obrazów
-na niskim poziomie i doskonale spe³nia wymagania mojego projektu.
+Eksponenty wzrost popularnoÅ›ci urzÄ…dzeÅ„ mobilnych obserwujemy juÅ¼ od wielu lat.
+Do tej pory jednak, mimo Å¼e wiele z nich wyposaÅ¼one jest w kamerÄ™ cyfrowÄ…,
+praktycznie Å¼adne z nich nie byÅ‚o w stanie przetwarzaÄ‡ obrazu nawet w czasie
+zbliÅ¼onym do rzeczywistego. To zmieni siÄ™ juÅ¼ niedÅ‚ugo, gdyÅ¼ zgodnie z prawem
+Moore'a moc obliczeniowa ukÅ‚adÃ³w scalonych podwaja siÄ™ co 24 miesiÄ…ce.  Wiele
+programistÃ³w nie chce jednak inwestowaÄ‡ zbyt duÅ¼o energii na pisanie
+skomplikowanych algorytmÃ³w na konkretnÄ… platformÄ™ sprzÄ™towÄ…, gdyÅ¼ udziaÅ‚y w
+rynku nawet najwiÄ™kszych graczy, zmieniajÄ… siÄ™ bardzo szybko i nie sposÃ³b
+przewidzieÄ‡ ktÃ³ra z nich da najwiÄ™ksze korzyÅ›ci w przyszÅ‚oÅ›ci. RozwiÄ…zania
+wieloplatformowe uznawane byÅ‚y do tej pory za zbyt wolne lub prymitywne.
+Ostatnio jednak moÅ¼emy zauwaÅ¼yÄ‡, Å¼e istnieje jedna technologia aktywnie
+wspierana przez wszystkich producentÃ³w mobilnych systemÃ³w operacyjnych i jest
+niÄ… jÄ™zyk programowania JavaScript oraz jÄ™zyk znacznikÃ³w HTML. Co wiÄ™cej nowa
+specyfikacja HTML5 dostarcza element canvas, ktÃ³ry sÅ‚uÅ¼y przetwarzaniu obrazÃ³w
+na niskim poziomie i doskonale speÅ‚nia wymagania mojego projektu.
 
 \section{Definicja problemu}
 
-Rozpoznawanie i ¶ledzenie obiektów to jeden z najbardziej znanych problemów
-wizji komputerowej. Mimo to temat ten ci±gle budzi emocje, gdy nowe i lepsze
-algorytmy zostaj± opublikowane. Rozwi±zania dziel± siê na dwa typy oparte na:
+Rozpoznawanie i Å›ledzenie obiektÃ³w to jeden z najbardziej znanych problemÃ³w
+wizji komputerowej. Mimo to temat ten ciÄ…gle budzi emocje, gdy nowe i lepsze
+algorytmy zostajÄ… opublikowane. RozwiÄ…zania dzielÄ… siÄ™ na dwa typy oparte na:
 modelowaniu (model-based) i analizie obrazu (appearence-based). Problemem tej
-pierwszej metody jest du¿y stopieñ skomplikowania i zawodno¶æ podstawowych
-operacji takich jak wykrywanie krawêdzi. Druga metoda zawodzi natomiast, np.
-przy zmianie konta widzenia, gdy zmieniaj± siê proporcje wymiarów.  W roku
-2002, zosta³a opublikowana publikacja opisuj±ca nowatorski algorytm eliminuj±cy
-s³abe punkty obu tych rozwi±zañ. Stepan Obdrzalek i Jiri Matas proponuj±
-³±czenie lokalnych cech obrazu (Local Affine Frames on Destinguished Regions) i
-definiuj± pojêcie MSER (Maksymalnie stabilnych regionów ekstremalnych), które
-posiadaj± wiele po¿±danych cech brakuj±cych we wcze¶niejszych rozwi±zaniach.
-Kolejnym etapem analizy obrazu jest po³±czenie charakterystycznych regionów
+pierwszej metody jest duÅ¼y stopieÅ„ skomplikowania i zawodnoÅ›Ä‡ podstawowych
+operacji takich jak wykrywanie krawÄ™dzi. Druga metoda zawodzi natomiast, np.
+przy zmianie konta widzenia, gdy zmieniajÄ… siÄ™ proporcje wymiarÃ³w.  W roku
+2002, zostaÅ‚a opublikowana publikacja opisujÄ…ca nowatorski algorytm eliminujÄ…cy
+sÅ‚abe punkty obu tych rozwiÄ…zaÅ„. Stepan Obdrzalek i Jiri Matas proponujÄ…
+Å‚Ä…czenie lokalnych cech obrazu (Local Affine Frames on Destinguished Regions) i
+definiujÄ… pojÄ™cie MSER (Maksymalnie stabilnych regionÃ³w ekstremalnych), ktÃ³re
+posiadajÄ… wiele poÅ¼Ä…danych cech brakujÄ…cych we wczeÅ›niejszych rozwiÄ…zaniach.
+Kolejnym etapem analizy obrazu jest poÅ‚Ä…czenie charakterystycznych regionÃ³w
 (distinguished regions) w pary. Najszybszym obecnie algorytmem jest ISMatch
-opisany w "Efitient Partial Shape Matching of Outer Contours", który dostarcza
-miarê podobieñstwa dwóch konturów. Dopiero teraz, maj±c wiele obszarów obrazu
-A, wraz z odpowiadaj±cym im dok³adnie jednym obszarem obrazu B, mo¿emy obliczyæ
-¶rednie ka¿dego z mo¿liwych przekszta³ceñ afinicznych.
+opisany w "Efitient Partial Shape Matching of Outer Contours", ktÃ³ry dostarcza
+miarÄ™ podobieÅ„stwa dwÃ³ch konturÃ³w. Dopiero teraz, majÄ…c wiele obszarÃ³w obrazu
+A, wraz z odpowiadajÄ…cym im dokÅ‚adnie jednym obszarem obrazu B, moÅ¼emy obliczyÄ‡
+Å›rednie kaÅ¼dego z moÅ¼liwych przeksztaÅ‚ceÅ„ afinicznych.
 
 \section{Cel pracy}
 
-Celem mojej pracy dyplomowej jest zaimplementowanie dwóch algorytmów: MSER i
-ISMatch w jêzyku JavaScript i zastosowanie ich do rozpoznania przekszta³ceñ
-geometrycznych, które zasz³y miêdzy dwoma obrazami, lub dwiema klatkami filmu.
-Przekszta³cenia afiniczne, które bêd± brane pod uwagê to: zmiana po³o¿enia
-(przesuniêcie), zmiana perspektywy (k±ta widzenia), zmiana k±ta (obrót), zmiana
-wielko¶ci obiektu (oddalenie lub przybli¿enie).
+Celem mojej pracy dyplomowej jest zaimplementowanie dwÃ³ch algorytmÃ³w: MSER i
+ISMatch w jÄ™zyku JavaScript i zastosowanie ich do rozpoznania przeksztaÅ‚ceÅ„
+geometrycznych, ktÃ³re zaszÅ‚y miÄ™dzy dwoma obrazami, lub dwiema klatkami filmu.
+PrzeksztaÅ‚cenia afiniczne, ktÃ³re bÄ™dÄ… brane pod uwagÄ™ to: zmiana poÅ‚oÅ¼enia
+(przesuniÄ™cie), zmiana perspektywy (kÄ…ta widzenia), zmiana kÄ…ta (obrÃ³t), zmiana
+wielkoÅ›ci obiektu (oddalenie lub przybliÅ¼enie).
 
 \subparagraph{Algorytm MSER}: Maksymalnie stabilne regiony ekstremalne
 
-W rozdziale 2 zostanie szczegó³owo opisany zaimplementowany algorytm
-znajdywania MSER-ów. Wyja¶niê jakie cechy musi spe³niaæ zbiór pikseli obrazu,
-aby mo¿na by³o je zakwalifikowaæ do maksymalnie stabilnych ekstremów.  Podam
-ich w³a¶ciwo¶ci oraz warunki w których s± one szczególnie korzystne oraz kiedy
-zawodz±. Opiszê algorytm do znajdywania MSER-ów o liniowej z³o¿ono¶ci
+W rozdziale 2 zostanie szczegÃ³Å‚owo opisany zaimplementowany algorytm
+znajdywania MSER-Ã³w. WyjaÅ›niÄ™ jakie cechy musi speÅ‚niaÄ‡ zbiÃ³r pikseli obrazu,
+aby moÅ¼na byÅ‚o je zakwalifikowaÄ‡ do maksymalnie stabilnych ekstremÃ³w.  Podam
+ich wÅ‚aÅ›ciwoÅ›ci oraz warunki w ktÃ³rych sÄ… one szczegÃ³lnie korzystne oraz kiedy
+zawodzÄ…. OpiszÄ™ algorytm do znajdywania MSER-Ã³w o liniowej zÅ‚oÅ¼onoÅ›ci
 obliczeniowej.
 
-\subparagraph{Algorytm ISMatch}: pe³ne dopasowanie kszta³tów
+\subparagraph{Algorytm ISMatch}: peÅ‚ne dopasowanie ksztaÅ‚tÃ³w
 
-W rozdziale 3 zostanie szczegó³owo opisany, czê¶ciowo zaimplementowany,
-algorytm dopasowania konturów. Zacznê od zdefiniowania problemu i przegl±du
-istniej±cych rozwi±zañ. Wyja¶niê dlaczego algorytm ISMatch jest najlepszy do
-moich celów. Zdefiniujê niezbêdn± reprezentacjê konturu i opiszê k±towy
-deskryptor konturu, który nie dyskryminuje wiêkszo¶ci przekszta³ceñ
-geometrycznych i pozwala na odnajdywanie czê¶ciowych dopasowañ. Opiszê algorym
-dopasowañ.  Wyja¶niê dlaczego nie wszystkie cechy tego algorytmu s± niezbêdê do
-mojej pracy i w jaki sposób mo¿na go upro¶ciæ zyskuj±c na szybko¶ci wykonania.
+W rozdziale 3 zostanie szczegÃ³Å‚owo opisany, czÄ™Å›ciowo zaimplementowany,
+algorytm dopasowania konturÃ³w. ZacznÄ™ od zdefiniowania problemu i przeglÄ…du
+istniejÄ…cych rozwiÄ…zaÅ„. WyjaÅ›niÄ™ dlaczego algorytm ISMatch jest najlepszy do
+moich celÃ³w. ZdefiniujÄ™ niezbÄ™dnÄ… reprezentacjÄ™ konturu i opiszÄ™ kÄ…towy
+deskryptor konturu, ktÃ³ry nie dyskryminuje wiÄ™kszoÅ›ci przeksztaÅ‚ceÅ„
+geometrycznych i pozwala na odnajdywanie czÄ™Å›ciowych dopasowaÅ„. OpiszÄ™ algorym
+dopasowaÅ„.  WyjaÅ›niÄ™ dlaczego nie wszystkie cechy tego algorytmu sÄ… niezbÄ™dÄ™ do
+mojej pracy i w jaki sposÃ³b moÅ¼na go uproÅ›ciÄ‡ zyskujÄ…c na szybkoÅ›ci wykonania.
 
-\chapter{Wydajno¶æ}
+\chapter{WydajnoÅ›Ä‡}
 
-W rozdziale 4 dokonam pomiarów czasu wykonywania i zu¿ycia pamiêci
-zaproponowanej implementacji na wszystkich dostêpnych mi silnikach jêzyka
-JavaScript. Testy bêd± przeprowadzone na domowym komputerze oraz na urz±dzeniu
-mobilnym.  Zbadam zale¿no¶æ przekazywanych parametrów na jako¶æ i czas
-pomiarów. Znajdê odpowied¼ na pytanie czy obecna implementacja pozwala na
-¶ledzenie obiektów w czasie rzeczywistym.
+W rozdziale 4 dokonam pomiarÃ³w czasu wykonywania i zuÅ¼ycia pamiÄ™ci
+zaproponowanej implementacji na wszystkich dostÄ™pnych mi silnikach jÄ™zyka
+JavaScript. Testy bÄ™dÄ… przeprowadzone na domowym komputerze oraz na urzÄ…dzeniu
+mobilnym.  Zbadam zaleÅ¼noÅ›Ä‡ przekazywanych parametrÃ³w na jakoÅ›Ä‡ i czas
+pomiarÃ³w. ZnajdÄ™ odpowiedÅº na pytanie czy obecna implementacja pozwala na
+Å›ledzenie obiektÃ³w w czasie rzeczywistym.
 
-Uzyskane wyniki porównam do wyników innych implementacji publikowanych w
-internecie, g³ównie o zamkniêtym kodzie w jêzykach pre-kompilowanych.
+Uzyskane wyniki porÃ³wnam do wynikÃ³w innych implementacji publikowanych w
+internecie, gÅ‚Ã³wnie o zamkniÄ™tym kodzie w jÄ™zykach pre-kompilowanych.
 
 Wnioski i dalsza praca
 
-W rodziale 5, podsumowuj±cym, wska¿ê mocne i s³abe punkty wykorzystanych
-algortymów. Zaproponujê praktyczne zastosowanie mojej implementacji oraz
-wyka¿ê, ¿e moja implementacja jest warto¶ciowa i z powodzeniem mo¿e zostaæ
-u¿yta w innych pracach jako gotowa biblioteka programistyczna. Postaram siê
-przewidzieæ przys³o¶æ podobnych rozwi±zañ i zaproponujê udoskonalenia mojej
+W rodziale 5, podsumowujÄ…cym, wskaÅ¼Ä™ mocne i sÅ‚abe punkty wykorzystanych
+algortymÃ³w. ZaproponujÄ™ praktyczne zastosowanie mojej implementacji oraz
+wykaÅ¼Ä™, Å¼e moja implementacja jest wartoÅ›ciowa i z powodzeniem moÅ¼e zostaÄ‡
+uÅ¼yta w innych pracach jako gotowa biblioteka programistyczna. Postaram siÄ™
+przewidzieÄ‡ przysÅ‚oÅ›Ä‡ podobnych rozwiÄ…zaÅ„ i zaproponujÄ™ udoskonalenia mojej
 implementacji.
 \end{document}
