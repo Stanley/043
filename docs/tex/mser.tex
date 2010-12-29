@@ -1,0 +1,119 @@
+\chapter{Maksymalnie stabilne regiony ekstremalne}
+
+Maksymalnie Stabilne Regiony Ekstremalne (MSER) po raz pierwszy zostały opisane
+w publikacji Jiri Matasa pt. "Robust Wide Baseline Stereo from Maximally Stable
+Extremal Regions" i znajdują zastosowanie np. w rozpoznawaniu i śledzeniu
+obiektów, składaniu fragmentów obrazu oraz trójwymiarowej rekonstrukcji
+otoczenia.
+
+\section{Charakterystyczne regiony}
+
+Charakterystyczne regiony (ang. distinguished regions) są fragmentami obrazów,
+które posiadają pewne wyróżniające właściwości pozwalające na ich powtarzalne i
+trwałe wykrywanie, niezależnie od pewnych deformacji. Maksymalnie stabilny
+region ekstremalny jest spójnym segmentem obrazu otrzymanym w procesie
+binaryzacji przez progowanie. Właściwość "ekstremalności" odnosi się do tego,
+że każdy piksel w danym rejonie jest znacznie jaśniejszy MSER+ (lub ciemniejszy
+MSER-) od wszystkich pikseli otaczających region o parametr stabilności
+\todo{sigma}. Ponieważ w trakcie jednego przebiegu algorytmu możemy szukać
+tylko jednego typu regionów, wskazane jest powtórzenie algorytmu przetwarzacjąc 
+piksele w odwrotnej kolejności. Regiony te są natomiast maksymalnie stabilne
+ponieważ w procesie binaryzacji ich rozmiar, w pewnym przedziale jasności, nie
+rośnie.
+
+\begin{enumerate} MSER-y posiadają szereg pożadanych cech, w tym:
+\item niewrażliwość na zmianę perspektywy, \item obojętność na zmianę
+jasności (oświetlenia), \item liniowa złożoność obliczeniowa (choć w
+oryginalnej publikacji złożoność prawie liniowa), \item duża dokładność
+opisywanych krawędzi (w przeciwieństwie do innych algorytmów
+stusujących smoothing czyli zmiękczanie krawędzi).  \end{enumerate}
+
+Nawet po zajściu w/w transformacji, regiony, jeżeli tylko
+spełnią podstawowe kryteria, będą dalej opisywać te same obszary.
+
+\section{Algorytm}
+
+Algorytm zaproponowany przez Davida Nistera i Henrika Steweniusa w publikacji
+"Linear Time Maximally Stable Extremal Regions" jako pierwszy posiada, w
+najgorszym przypadku, liniową złożoność obliczeniową. Najważniejszą zmianą w
+stosunku do wcześniejszych implementacji jest kolejność w której iterujemy
+piksele, dzięki czemu struktura obszarów w pamięci reprezentowana jest jako
+zbiór pikseli (a nie lista połączona) W analogii, jasności pikseli tworzą pasma
+górskie, a kolejność odwiedzanych pikseli determinuje woda (ze źródła
+znajdującego się w dowolnym miejscu), spływająca najpierw do dolin tworząc
+jeziora, później unosząc się, łącząc kolejne zbiorniki, w końcu zalewając cały
+obszar (w oryginalnej implementacji poziom wody wzrasta jednomiernie na całej
+powierzchni obrazu niezależnie od jego topografii).
+
+\subparagraph{Podstawowe definicje}
+
+Załóżmy obraz \textit{I} posiadający \textit{n} pikseli indeksowanych zmienną
+\textit{x}. Każdemu pikselowi przyporządkowana jest wartość \textit{f(x)}
+będąca jasnością (ang. gray-scale value) z przedziału [0..255]. Każdemu
+pikselowi odpowiada także zbiór \textit{N(x)} od 2 do 4 pikseli z nim
+sąsiadujących. Ścieżka z \textit{x} do \textit{y} jest ciągiem sąsiadujących ze
+sobą pikseli zaczynającym się w \textit{x} i kończącym się na \textit{y}.
+Spójny zbiór \textit{X} jest zbiorem pikseli posiadającymi ścieżki każdy z
+każdym. Zbiór z progiem \textit{y} jest zbiorem pikseli których jasność nie
+przekracza wartości y. Wraz ze zwiększaniem progu \textit{y} (zwiększając
+akceptowalną jasność pikseli) powstają nowe spóje zbiory, które tworzą drzewo
+komponentów (ang. component tree). Liśćmi tego drzewa są tzw. minima, czyli
+komponenty o pikselach o takiej samej jasności, a węzłami komponenty powstałe
+po złączeniu dwóch innych komponentów, w wyniku procesu podnoszenia progu y do
+momentu w którym korzeniem drzewa stanie się komponent zawierający wszystkie
+piksele obrazu.
+
+W zależności od potrzeb, nie musimy pamiętać który piksel należy do którego
+komponentu. Jeżeli w dalszym etapie analizy obrazu wystarczą nam przybliżone
+położenie i kształt obszarów w postaci elips, to każdy region można opisać za
+pomocą sum: \sum{1}, x, y, xx, xy, yy.
+
+Maksymalnie stabilnymi regionami ekstremalnymi są te komponenty, któych funkcja
+wzrostu osiąga lokalne minimum.
+
+\subparagraph{Struktury danych}
+
+Implementacja wymaga następujących struktur danych: \begin{itemize} \item maski
+binarnej odwiedzonych pikseli. \item Kolejki priorytetowej granicznych pikseli
+(ang. boundary pixels) nienależących do sąsiadującego komponentu, z powodu
+wyższego poziomu jasności. Zostaną one zamapiętane od przetworzenia w dalszej
+kolejności, poczynając od najciemniejszego. \item Stosu \textit{C} komponentów
+wraz z historią jego rozmiarów (niezbędą do stwierdzenia cechy stabilności)
+oraz poziomem jasności na którym aktualnie się znajduje.  \end{itemize}
+
+\subparagraph{Przebieg algorytmu}
+
+\begin{enumerate} \item Wyzeruj maskę binarną odwiedzonych pikseli, kolejkę
+piorytetową i stos komponentów. Włóż na stos pusty komponent z poziomem
+jasności większym niż jakikolwiek możliwy. \item Wybierz dowolny piksel
+źródłowy (np. lewy górny róg) i zapisz go do zmiennej \textit{current\_pixel}.
+Zmień jego status w masce binarnej, a jego jasność zapisz do zmiennej
+\textit{current\_level}. \item Włóż na stos pusty komponent z poziomem jasności
+\textit{current\_level}. \item Odwiedź pozostałe piksele sąsiadujące. Dla
+każdego sąsiada sprawdź czy jest dostępny (tj. czy był odwiedzany) jeżeli nie
+jest, oznacz go jako dostępny i sprawdź czy jego jasność nie jest mniejsza od
+aktualnego poziomu, to dodaj go do kolejki piorytetowej. W przeciwnym razie
+dodaj zawartość zmiennej \textit{current\_pixel} do kolejki, a zmiennej
+przypisz sąsiada. Uaktualnij wartość zmniennej \textit{current\_level}. Przejdź
+do punktu 3. \item Dodaj \textit{current\_pixel} do komponentu znajdującego się
+na wierzchu stosu komponentów. \item Pobierz piksel z kolejki piorytetowej.
+Jeżeli w kolejce nie ma żadnych pikseli, zakończ algorytm. Jeżeli jasność
+zwróconego piksela jest równa current\_level, przejdź do punktu 4. \item
+Ponieważ zrwórcony piksel znajduje się wyżej (jest jaśniejszy) od
+przetwarzanego komponentu, istnieje możliwość połączenia dwóch lub więcej
+komponentów w jeden. W tym celu przetwarzamy wszystkie komponenty na stosie,
+których poziom jest mniejszy lub równy od obecnego. Dokonuje się tego za pomocą
+podprocedury \textit{ProcessStack}. Następnie wróć do punktu 4. \end{enumerate}
+
+Przebieg procedury \textit{ProcessStack(new\_pixel\_gray\_level)}
+\begin{enumerate} \item Rozważ komponent z wierzchołka stosu. Ustaw
+current\_level na mniejszą z wartości: new\_pixel\_gray\_level i poziomu
+drugiego komponentu na stosie. \item Jeżeli new\_pixel\_gray\_level jest
+mniejszy od poziomu drugiego komponentu na stosie, pozwól aby komponent na
+wierzchu stosu miał poziom new\_pixel\_gray\_level i wyjdź z procedury. \item
+Zdejmij komponent z wierzchu stosu i połącz go z drugim komponentem w kolei.
+Takie połączenie traktuje się jako pojedyńczy skok rozmiaru większego z komponentów.
+\item Jeżeli new\_pixel\_gray\_level jest większy od poziomu nowego komponentu
+na wierzchu stosu, przejdź do punktu 1. \end{enumerate}
+
+\todo{Czy MSER}
