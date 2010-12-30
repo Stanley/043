@@ -15,9 +15,9 @@ function main(){
   res = $("#res").attr("value")
   $("#imgs").empty()
 
-  var previous_descriptors = [];
+  var previous_descriptors;
 
-  for(var i=1; i<7; i++){
+  for(var i=3; i<7; i++){
 
     var img = new Image();
     img.rel = i;
@@ -42,15 +42,14 @@ function main(){
         // console.profileEnd()
         console.timeEnd("mser")
         console.log("Znaleziono "+mser.length+" regionów");
-        //console.log(mser)
 
+        // Draw image in black and white
         var regions = document.createElement('canvas');
         regions.height = this.height
         regions.width = this.width
         var regionsConetext = regions.getContext('2d');
         var regionsData = regionsConetext.createImageData(this.width, this.height);
         var d = regionsData.data;
-        
         var resolution = this.width*this.height;
         var d_ = imageData.data;
         while(resolution--){
@@ -63,74 +62,11 @@ function main(){
           d[pos+3] = 255;
         }
 
-        var current = []
-
-        var region_features = []
-        var j = mser.length
-
-        // while(i--){
-        //   var r = mser[i]
-        //   var x = parseInt(r[1]/ r[0])
-        //   var y = parseInt(r[2]/ r[0])
-        //   var pos = y*this.width + x << 2;
-
-        //   d[pos] = 255;
-        //   d[pos+1] = 0;
-        //   d[pos+2] = 0;
-        //   d[pos+3] = 255;
-
-        //   // Ellipses
-        //   var sumY =r[5] - Math.pow(r[2],2)/r[0];
-        //   var sumX =r[3] - Math.pow(r[1],2)/r[0];
-
-        //   var gamma = r[4] - r[1]*r[2]/r[0] // - x*y;
-        //   var lambda_1 = (sumX + sumY)/2 + Math.sqrt(Math.pow(sumY-sumX, 2) + 4*Math.pow(gamma, 2))/2
-        //   var lambda_2 = (sumX + sumY)/2 - Math.sqrt(Math.pow(sumY-sumX, 2) + 4*Math.pow(gamma, 2))/2
-        //   var r1 = parseInt(Math.sqrt(4*lambda_1/r[0]));
-        //   var r2 = parseInt(Math.sqrt(4*lambda_2/r[0]));
-
-        //   current.push([x, y, r[0], r1, r2, parseInt(r[6]/r[0])])
-        // }
-
-        var descriptors = [];
-        console.time("ismatch");
-
-        var connections = document.createElement('canvas');
-        connections.height = regions.height*2;
-        connections.width = regions.width;
-        connections.style.position = "absolute";
-        connections.style.left = 0;
-        connections.style.top = -regions.height+"px";
-
-        var ctx = connections.getContext('2d');
-        ctx.beginPath();
-
-        // For each MSER
+        // Draw regions' sampled contours
+        var j = mser.length;
         while(j--){
 
           var region = mser[j];
-
-
-          var descripion = ISMatch.describe(region);
-
-          var match_to = ISMatch(descripion, previous_descriptors, {min: 0.2});
-
-          // while(l--){
-          //   var score = ISMatch(descripion, previous_descriptors[l]);
-          //   if(min > score){
-          //     min = score;
-          //     match = [descripion, previous_descriptors[l]]
-          //   }
-          // }
-
-          descriptors.push(descripion);
-
-          // Draw a line between regions
-          if(match_to){
-            ctx.moveTo(match_to[0], match_to[1]);
-            ctx.lineTo(mser[j][0][0], regions.height+mser[j][0][1]);
-          }
-
           var k = region.length;
           var red = parseInt(Math.random()*200)+56;
           var green = parseInt(Math.random()*200)+56;
@@ -146,17 +82,55 @@ function main(){
           }
         }
 
+        // Find corespondences between msers
+        console.time("ismatch");
+
+        var current_descriptors = mser.map(function(m){return ISMatch.describe(m)});
+        var matched_pairs = [];
+        if(previous_descriptors){
+          var matched_pairs = ISMatch(current_descriptors, 
+                                      previous_descriptors, 
+                                      {min: 0.5});
+        }
+
+        previous_descriptors = current_descriptors;
+
+        console.timeEnd("ismatch");
+
+        // Prepare to draw regions' connections
+        var connections = document.createElement('canvas');
+        connections.height = regions.height*2;
+        connections.width = regions.width;
+        connections.style.position = "absolute";
+        connections.style.left = 0;
+        connections.style.top = -regions.height+"px";
+
+        var ctx = connections.getContext('2d');
+        ctx.strokeStyle = "rgba(255,0,0,0.5)"
+        ctx.beginPath();
+
+        var j = matched_pairs.length
+        // For each connection
+        while(j--){
+          // Pair of points ([xa,ya,xb,yb])
+          var coordinates = matched_pairs[j];
+
+          // Draw a line between two regions
+          if(coordinates){
+
+            ctx.moveTo(coordinates[0], coordinates[1]);
+            ctx.lineTo(coordinates[2], regions.height+coordinates[3]);
+          }
+        }
+
         ctx.stroke();
 
-        previous_descriptors = descriptors;
-        console.timeEnd("ismatch")
 
         regionsConetext.putImageData(regionsData, 0, 0)
         li.append(regions)
         li.append(connections)
         imgs.append(li)
 
-        features.push(current)
       })
       .attr('src', 'images/'+set+'/'+res+'/img'+i+'.png')
   }
