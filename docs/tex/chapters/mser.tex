@@ -19,14 +19,13 @@ MSER-) od wszystkich pikseli otaczających region o parametr stabilności
 tylko jednego typu regionów, wskazane jest powtórzenie algorytmu przetwarzacjąc 
 piksele w odwrotnej kolejności. Regiony te są natomiast maksymalnie stabilne
 ponieważ w procesie binaryzacji ich rozmiar, w pewnym przedziale jasności, nie
-rośnie.
-
-\begin{enumerate} MSER-y posiadają szereg pożadanych cech, w tym:
-\item niewrażliwość na zmianę perspektywy, \item obojętność na zmianę
-jasności (oświetlenia), \item liniowa złożoność obliczeniowa (choć w
-oryginalnej publikacji złożoność prawie liniowa), \item duża dokładność
-opisywanych krawędzi (w przeciwieństwie do innych algorytmów
-stusujących smoothing czyli zmiękczanie krawędzi).  \end{enumerate}
+rośnie. MSER-y posiadają szereg pożadanych cech, w tym: 
+\begin{enumerate} \item niewrażliwość na zmianę perspektywy, \item obojętność
+    na zmianę jasności (oświetlenia), \item liniową złożoność obliczeniową
+    (choć w oryginalnej publikacji złożoność prawie liniowa), \item dużą
+    dokładność opisywanych krawędzi (w przeciwieństwie do innych algorytmów
+    stosujących smoothing czyli zmiękczanie krawędzi).  
+\end{enumerate}
 
 Nawet po zajściu w/w transformacji, regiony, jeżeli tylko
 spełnią podstawowe kryteria, będą dalej opisywać te same obszary.
@@ -43,7 +42,7 @@ górskie, a kolejność odwiedzanych pikseli determinuje woda (ze źródła
 znajdującego się w dowolnym miejscu), spływająca najpierw do dolin tworząc
 jeziora, później unosząc się, łącząc kolejne zbiorniki, w końcu zalewając cały
 obszar (w oryginalnej implementacji poziom wody wzrasta jednomiernie na całej
-powierzchni obrazu niezależnie od jego topografii).
+powierzchni obrazu, niezależnie od jego topografii).
 
 \subparagraph{Podstawowe definicje}
 
@@ -60,26 +59,27 @@ akceptowalną jasność pikseli) powstają nowe spóje zbiory, które tworzą dr
 komponentów (ang. component tree). Liśćmi tego drzewa są tzw. minima, czyli
 komponenty o pikselach o takiej samej jasności, a węzłami komponenty powstałe
 po złączeniu dwóch innych komponentów, w wyniku procesu podnoszenia progu y do
-momentu w którym korzeniem drzewa stanie się komponent zawierający wszystkie
+momentu, w którym korzeniem drzewa stanie się komponent zawierający wszystkie
 piksele obrazu.
 
 W zależności od potrzeb, nie musimy pamiętać który piksel należy do którego
 komponentu. Jeżeli w dalszym etapie analizy obrazu wystarczą nam przybliżone
 położenie i kształt obszarów w postaci elips, to każdy region można opisać za
-pomocą sum: \sum{1}, x, y, xx, xy, yy.
+pomocą sum: $\sum{1}, \sum{x}, \sum{y}, \sum{xx}, \sum{xy}, \sum{yy}$.
 
-Maksymalnie stabilnymi regionami ekstremalnymi są te komponenty, któych funkcja
-wzrostu osiąga lokalne minimum. \todo{min max}
+Maksymalnie stabilnymi regionami ekstremalnymi są te komponenty, których funkcja
+wzrostu osiąga lokalne minimum. \todo{parametry min i max}
 
 \subparagraph{Struktury danych}
 
-Implementacja wymaga następujących struktur danych: \begin{itemize} \item maski
-binarnej odwiedzonych pikseli. \item Kolejki priorytetowej granicznych pikseli
-(ang. boundary pixels) nienależących do sąsiadującego komponentu, z powodu
-wyższego poziomu jasności. Zostaną one zamapiętane od przetworzenia w dalszej
-kolejności, poczynając od najciemniejszego. \item Stosu \textit{C} komponentów
-wraz z historią jego rozmiarów (niezbędą do stwierdzenia cechy stabilności)
-oraz poziomem jasności na którym aktualnie się znajduje.  \end{itemize}
+Implementacja wymaga następujących struktur danych: 
+\begin{itemize} \item Maski binarnej odwiedzonych pikseli.  \item Kolejki
+    priorytetowej granicznych pikseli (ang. boundary pixels) nienależących do
+    sąsiadującego komponentu, z powodu wyższego poziomu jasności. Zostaną one
+    zamapiętane od przetworzenia w dalszej kolejności, poczynając od
+    najciemniejszego.  \item Stosu \textit{C} komponentów wraz z historią jego
+    rozmiarów (niezbędą do stwierdzenia cechy stabilności), oraz poziomem
+    jasności na którym aktualnie się znajduje.  \end{itemize}
 
 \subparagraph{Przebieg algorytmu}
 
@@ -92,29 +92,30 @@ Zmień jego status w masce binarnej, a jego jasność zapisz do zmiennej
 \textit{current\_level}. \item Odwiedź pozostałe piksele sąsiadujące. Dla
 każdego sąsiada sprawdź czy jest dostępny (tj. czy był odwiedzany) jeżeli nie
 jest, oznacz go jako dostępny i sprawdź czy jego jasność nie jest mniejsza od
-aktualnego poziomu, to dodaj go do kolejki piorytetowej. W przeciwnym razie
+aktualnego poziomu i dodaj go do kolejki priorytetowej. W przeciwnym razie
 dodaj zawartość zmiennej \textit{current\_pixel} do kolejki, a zmiennej
 przypisz sąsiada. Uaktualnij wartość zmniennej \textit{current\_level}. Przejdź
 do punktu 3. \item Dodaj \textit{current\_pixel} do komponentu znajdującego się
-na wierzchu stosu komponentów. \item Pobierz piksel z kolejki piorytetowej.
+na wierzchu stosu komponentów. \item Pobierz piksel z kolejki priorytetowej.
 Jeżeli w kolejce nie ma żadnych pikseli, zakończ algorytm. Jeżeli jasność
 zwróconego piksela jest równa current\_level, przejdź do punktu 4. \item
-Ponieważ zrwórcony piksel znajduje się wyżej (jest jaśniejszy) od
+Ponieważ zwrócony piksel znajduje się wyżej (jest jaśniejszy) od
 przetwarzanego komponentu, istnieje możliwość połączenia dwóch lub więcej
 komponentów w jeden. W tym celu przetwarzamy wszystkie komponenty na stosie,
 których poziom jest mniejszy lub równy od obecnego. Dokonuje się tego za pomocą
-podprocedury \textit{ProcessStack}. Po jej wykonaniu wróć do punktu 4. \end{enumerate}
+pod procedury \textit{ProcessStack}. Po jej wykonaniu wróć do punktu 4. \end{enumerate}
 
 Przebieg procedury \textit{ProcessStack(new\_pixel\_gray\_level)}
 \begin{enumerate} \item Rozważ komponent z wierzchołka stosu. Ustaw
-current\_level na mniejszą z wartości: new\_pixel\_gray\_level i poziomu
-drugiego komponentu na stosie. \item Jeżeli new\_pixel\_gray\_level jest
-mniejszy od poziomu drugiego komponentu na stosie, pozwól aby komponent na
-wierzchu stosu miał poziom new\_pixel\_gray\_level i wyjdź z procedury. \item
-Zdejmij komponent z wierzchu stosu i połącz go z drugim komponentem z kolei.
-Takie połączenie traktuje się jako pojedyńczy skok rozmiaru większego z komponentów.
-\item Jeżeli new\_pixel\_gray\_level jest większy od poziomu nowego komponentu
-na wierzchu stosu, przejdź do punktu 1. \end{enumerate}
+    current\_level na mniejszą z wartości: new\_pixel\_gray\_level i poziomu
+    drugiego komponentu na stosie. \item Jeżeli new\_pixel\_gray\_level jest
+    mniejszy od poziomu drugiego komponentu na stosie, pozwól aby komponent na
+    wierzchu stosu miał poziom new\_pixel\_gray\_level i wyjdź z procedury.
+  \item Zdejmij komponent z wierzchu stosu i połącz go z drugim komponentem na stosie z
+    kolei.  Takie połączenie traktuje się jako pojedynczy skok rozmiaru
+    większego z komponentów.  \item Jeżeli new\_pixel\_gray\_level jest większy
+    od poziomu nowego komponentu na wierzchu stosu, przejdź do punktu 1.
+\end{enumerate}
 
 Po każdym wzroście poziomu komponentu o 1, należy sprawdzić czy spełnia on
 kryteria MSER oraz czy jego rozmiar zawiera się w żądanym przedziale. Jeżeli
@@ -131,9 +132,9 @@ Aby obsłużyć większą ilość pikseli (maska jednego pikslela to jeden bit),
 tworzymy tablicę o rozmiarze n*m/32, gdzie n i m to długość i szerokość obrazu,
 przechowującą 32 bitowe maski.
 
-Kolejka to tablica 256 tablic pikseli o jasności odpowiadającej indeksowi w
+Kolejka priorytetowa to tablica 256 tablic pikseli o jasności odpowiadającej indeksowi w
 pierwszej tablicy. Np. piątym elementem tablicy jest lista pikseli czekających
-na przetworzenie o jasności 5. Dodatkowo, w celu optymalizacji czasu wykonania,
+na przetworzenie, o jasności 5. Dodatkowo, w celu optymalizacji czasu wykonania,
 wykorzystany został wskaźnik, pierwszego od końca, niepustego elementu, do
 szybkiego dostępu do jego zawartości.
 
