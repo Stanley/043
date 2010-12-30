@@ -69,7 +69,7 @@ położenie i kształt obszarów w postaci elips, to każdy region można opisa�
 pomocą sum: \sum{1}, x, y, xx, xy, yy.
 
 Maksymalnie stabilnymi regionami ekstremalnymi są te komponenty, któych funkcja
-wzrostu osiąga lokalne minimum.
+wzrostu osiąga lokalne minimum. \todo{min max}
 
 \subparagraph{Struktury danych}
 
@@ -103,7 +103,7 @@ Ponieważ zrwórcony piksel znajduje się wyżej (jest jaśniejszy) od
 przetwarzanego komponentu, istnieje możliwość połączenia dwóch lub więcej
 komponentów w jeden. W tym celu przetwarzamy wszystkie komponenty na stosie,
 których poziom jest mniejszy lub równy od obecnego. Dokonuje się tego za pomocą
-podprocedury \textit{ProcessStack}. Następnie wróć do punktu 4. \end{enumerate}
+podprocedury \textit{ProcessStack}. Po jej wykonaniu wróć do punktu 4. \end{enumerate}
 
 Przebieg procedury \textit{ProcessStack(new\_pixel\_gray\_level)}
 \begin{enumerate} \item Rozważ komponent z wierzchołka stosu. Ustaw
@@ -111,9 +111,38 @@ current\_level na mniejszą z wartości: new\_pixel\_gray\_level i poziomu
 drugiego komponentu na stosie. \item Jeżeli new\_pixel\_gray\_level jest
 mniejszy od poziomu drugiego komponentu na stosie, pozwól aby komponent na
 wierzchu stosu miał poziom new\_pixel\_gray\_level i wyjdź z procedury. \item
-Zdejmij komponent z wierzchu stosu i połącz go z drugim komponentem w kolei.
+Zdejmij komponent z wierzchu stosu i połącz go z drugim komponentem z kolei.
 Takie połączenie traktuje się jako pojedyńczy skok rozmiaru większego z komponentów.
 \item Jeżeli new\_pixel\_gray\_level jest większy od poziomu nowego komponentu
 na wierzchu stosu, przejdź do punktu 1. \end{enumerate}
 
-\todo{Czy MSER}
+Po każdym wzroście poziomu komponentu o 1, należy sprawdzić czy spełnia on
+kryteria MSER oraz czy jego rozmiar zawiera się w żądanym przedziale. Jeżeli
+tak, zapamiętujemy do osobnej struktury, zawierającej wszystkie MSER-y, sam
+kontur regionu.
+
+\subparagraph{Implementacja}
+
+Maskę binarną w języku JavaScript można przechowywać w zmiennej typu Integer,
+która składa się z 32 bitów (tak naprawdę JavaScript nie rozróżnia liczb
+całkowitych od zmiennoprzecinkowych, gdyż stosuje jeden standard IEEE 754, ale
+niektóre operacje, w tym binarne, działają jedynie na pierwszych 32 bitach).
+Aby obsłużyć większą ilość pikseli (maska jednego pikslela to jeden bit),
+tworzymy tablicę o rozmiarze n*m/32, gdzie n i m to długość i szerokość obrazu,
+przechowującą 32 bitowe maski.
+
+Kolejka to tablica 256 tablic pikseli o jasności odpowiadającej indeksowi w
+pierwszej tablicy. Np. piątym elementem tablicy jest lista pikseli czekających
+na przetworzenie o jasności 5. Dodatkowo, w celu optymalizacji czasu wykonania,
+wykorzystany został wskaźnik, pierwszego od końca, niepustego elementu, do
+szybkiego dostępu do jego zawartości.
+
+Stos komponentów jest dynamiczną tablicą 3-elementowych tablic, które
+zawierają: \begin{inparaenum} \item poziom jasności komponentu, \item tablicę
+  pikseli należących do komponentu oraz \item stos zawierający rozmiar
+  komponentu na poprzednich poziomach jasności.  \todo{pozostałe elementy}
+\end{inparaenum}
+
+Istnieje wiele możliwości wyznaczania jasności trójkolorowych pikseli.
+Najszybsza metoda polega dodaniu do siebie wartości jednej czwartej części
+czerwonego koloru oraz jednej drugiej części zielonego i niebieskiego.
