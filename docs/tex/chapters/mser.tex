@@ -2,7 +2,7 @@
 
 Maksymalnie Stabilne Regiony Ekstremalne (MSER) po raz pierwszy zostały opisane
 w publikacji Jiri Matasa pt. "Robust Wide Baseline Stereo from Maximally Stable
-Extremal Regions" i znajdują zastosowanie np. w rozpoznawaniu i śledzeniu
+Extremal Regions" \cite{matas02} i znajdują zastosowanie np. w rozpoznawaniu i śledzeniu
 obiektów, składaniu fragmentów obrazu oraz trójwymiarowej rekonstrukcji
 otoczenia.
 
@@ -68,7 +68,7 @@ położenie i kształt obszarów w postaci elips, to każdy region można opisa�
 pomocą sum: $\sum{1}, \sum{x}, \sum{y}, \sum{xx}, \sum{xy}, \sum{yy}$.
 
 Maksymalnie stabilnymi regionami ekstremalnymi są te komponenty, których funkcja
-wzrostu osiąga lokalne minimum. \todo{parametry min i max}
+wzrostu osiąga lokalne minimum. \todo{parametry min i max} \todo{dlaczego tekstura zła}
 
 \subparagraph{Struktury danych}
 
@@ -139,7 +139,7 @@ wykorzystany został wskaźnik, pierwszego od końca, niepustego elementu, do
 szybkiego dostępu do jego zawartości.
 
 Stos komponentów jest dynamiczną tablicą 3-elementowych tablic, które
-zawierają: \begin{inparaenum} \item poziom jasności komponentu, \item tablicę
+zawierają: \begin{inparaenum}[\itshape a\upshape)] \item poziom jasności komponentu, \item tablicę
   pikseli należących do komponentu oraz \item stos zawierający rozmiar
   komponentu na poprzednich poziomach jasności.  \todo{pozostałe elementy}
 \end{inparaenum}

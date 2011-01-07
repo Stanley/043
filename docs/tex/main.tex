@@ -1,9 +1,15 @@
 \documentclass[a4paper,12pt,polski]{report}
 
-% obsluga jezyka polskiego
+% obsługa języka polskiego
 \usepackage[utf8x]{inputenc}
 \usepackage[OT4]{fontenc}
 \usepackage{polski}
+
+% bibliografia
+\usepackage{natbib}
+
+% inline lists
+\usepackage{paralist}
 
 % obsługa \todo
 \usepackage{todonotes}
@@ -15,10 +21,13 @@
 \maketitle
 
 \tableofcontents
-
 \newpage
 
 \include{chapters/wstep}
 \include{chapters/mser}
+\include{chapters/ismatch}
+
+\bibliographystyle{plain}
+\bibliography{bibl}
 
 \end{document}
