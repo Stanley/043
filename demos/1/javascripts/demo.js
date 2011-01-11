@@ -8,16 +8,20 @@ var delta,
 
 function main(){
 
-  delta = parseInt($("#delta").attr("value"))
-  minimum = parseInt($("#min").attr("value"))
-  maximum = parseInt($("#max").attr("value"))
-  set = $("#set").attr("value")
-  res = $("#res").attr("value")
+  var delta = parseInt($("#delta").attr("value")),
+      minimum = parseInt($("#min").attr("value")),
+      maximum = parseInt($("#max").attr("value")),
+      set = $("#set").attr("value"),
+      res = $("#res").attr("value"),
+      sample = parseInt($("#sample").attr("value"))
+      descriptor_delta = parseInt($("#descriptor_delta").attr("value")),
+      threshold = parseInt($("#threshold").attr("value")),
+
   $("#imgs").empty()
 
   var previous_descriptors;
 
-  for(var i=3; i<7; i++){
+  for(var i=1; i<6; i++){
 
     var img = new Image();
     img.rel = i;
@@ -38,7 +42,7 @@ function main(){
 
         console.time("mser")
        // console.profile()
-        var mser = Mser(imageData, {delta: delta, min: minimum, max: maximum, sample: 5});
+        var mser = Mser(imageData, {delta: delta, min: minimum, max: maximum, sample: sample});
         // console.profileEnd()
         console.timeEnd("mser")
         console.log("Znaleziono "+mser.length+" regionów");
@@ -85,7 +89,7 @@ function main(){
         // Find corespondences between msers
         console.time("ismatch");
 
-        var current_descriptors = mser.map(function(m){return ISMatch.describe(m)});
+        var current_descriptors = mser.map(function(m){return ISMatch.describe(m, descriptor_delta)});
         var matched_pairs = [];
         if(previous_descriptors){
           var matched_pairs = ISMatch(current_descriptors, previous_descriptors, {

@@ -23,13 +23,17 @@ ul{
 }
 
 #imgs > li{
-  margin: 5px auto;
+  margin: 0px auto;
   position: relative
 }
 
-#imgs > li:hover > canvas{
+/* #imgs > li:hover > canvas{
   opacity: 0.2;
   -webkit-transition: opacity 0.2s linear;
+} */
+
+#imgs{
+  overflow: hidden;
 }
 
 #imgs > li:active .layers canvas:last-child{
@@ -175,4 +179,8 @@ ul{
 
 .disabled, .disabled input{
   color: #bbb
+}
+
+.descriptor > canvas{
+  border: 2px red solid
 }

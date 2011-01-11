@@ -20,7 +20,7 @@
 
     <div id="steps">
     <div class="step">
-      <h3>Step 1:</h3> 
+      <h3>Finding</h3> 
       <table>     
         <tr>
           <td>
@@ -58,6 +58,10 @@
             Change:
           </td><td>
             <select name="set" id="set">
+              <option value="hand">hand</option>
+              <option value="scissors">scissors</option>
+              <option value="drop">drop</option>
+              <option value="test">test</option>
               <option value="graf">viewpoint</option>
               <option value="bikes">blur</option>
               <option value="boat">zoom+rotation</option>
@@ -78,32 +82,39 @@
           </td>
         </tr>
       </table>      
-      <input type="button" id="step1" value="Find!" />
     </div>
     
-    <div class="step disabled">
-      <h3>Step 2:</h3>    
+    <div class="step">
+      <h3>Matching</h3>    
       <table>
         <tr>
           <td>
-            Steps (1-360):
+            Contour sample
           </td><td>
-            <input type="text" id="steps_count" value="72" />
+            <input type="text" id="sample" value="5" />
           </td>
         </tr>
         <tr>
           <td>
-            Acceptance level (0-100):
+            Delta
           </td><td>
-            <input type="text" id="accept" value="70" />
+            <input type="text" id="descriptor_delta" value="4" />
+          </td>
+        </tr>    
+        <tr>
+          <td>
+            Max. difference value
+          </td><td>
+            <input type="text" id="threshold" value="0.70" />
           </td>
         </tr>    
       </table>  
-      <input type="button" id="step2" value="Find!" />
+      <input type="button" id="step1" value="Find!" />
     </div>
     </div>
  
     <ul id="imgs"></ul>
+    <ul id="desc"></ul>
 
     <script type="application/javascript" src="javascripts/jquery.min.js"></script>
     <script type="application/javascript" src="javascripts/jquery-ui-1.8.1.min.js"></script>
