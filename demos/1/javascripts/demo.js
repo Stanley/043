@@ -88,9 +88,10 @@ function main(){
         var current_descriptors = mser.map(function(m){return ISMatch.describe(m)});
         var matched_pairs = [];
         if(previous_descriptors){
-          var matched_pairs = ISMatch(current_descriptors, 
-                                      previous_descriptors, 
-                                      {min: 0.5});
+          var matched_pairs = ISMatch(current_descriptors, previous_descriptors, {
+            max: threshold,
+            debug: true
+          });
         }
 
         previous_descriptors = current_descriptors;
