@@ -20,6 +20,7 @@ function main(){
   $("#imgs").empty()
 
   var previous_descriptors;
+  var previous; // first point of the contour of previous region
 
   for(var i=1; i<6; i++){
 
@@ -94,7 +95,7 @@ function main(){
         if(previous_descriptors){
           var matched_pairs = ISMatch(current_descriptors, previous_descriptors, {
             max: threshold,
-            debug: true
+            //debug: true
           });
         }
 
@@ -117,19 +118,27 @@ function main(){
         var j = matched_pairs.length
         // For each connection
         while(j--){
-          // Pair of points ([xa,ya,xb,yb])
-          var coordinates = matched_pairs[j];
+          var match = matched_pairs[j]
+            if(match){
+              var from;
+              var to;
 
-          // Draw a line between two regions
-          if(coordinates){
+              if(previous[match.matches].length > mser[match.from].length){
+                from = previous[match.matches][match.offset];
+                to = mser[match.from][0];
+              } else {
+                from = previous[match.matches][0];
+                to = mser[match.from][match.offset];
+              }
 
-            ctx.moveTo(coordinates[0], coordinates[1]);
-            ctx.lineTo(coordinates[2], regions.height+coordinates[3]);
-          }
+              // Draw a line between two regions
+              ctx.moveTo(from[0], from[1]-5);
+              ctx.lineTo(to[0], regions.height+to[1]);
+            }
         }
 
+        previous = mser;
         ctx.stroke();
-
 
         regionsConetext.putImageData(regionsData, 0, 0)
         li.append(regions)
