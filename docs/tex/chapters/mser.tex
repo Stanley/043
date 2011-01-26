@@ -2,47 +2,59 @@
 
 Maksymalnie Stabilne Regiony Ekstremalne (MSER) po raz pierwszy zostały opisane
 w publikacji Jiri Matasa pt. "Robust Wide Baseline Stereo from Maximally Stable
-Extremal Regions" \cite{matas02} i znajdują zastosowanie np. w rozpoznawaniu i śledzeniu
-obiektów, składaniu fragmentów obrazu oraz trójwymiarowej rekonstrukcji
-otoczenia.
+Extremal Regions" \cite{matas02} i znajdują zastosowanie np. w rozpoznawaniu i
+śledzeniu obiektów, składaniu fragmentów obrazu oraz trójwymiarowej
+rekonstrukcji otoczenia.
 
 \section{Charakterystyczne regiony}
 
 Charakterystyczne regiony (ang. distinguished regions) są fragmentami obrazów,
-które posiadają pewne wyróżniające właściwości pozwalające na ich powtarzalne i
-trwałe wykrywanie, niezależnie od pewnych deformacji. Maksymalnie stabilny
-region ekstremalny jest spójnym segmentem obrazu otrzymanym w procesie
-binaryzacji przez progowanie. Właściwość "ekstremalności" odnosi się do tego,
-że każdy piksel w danym rejonie jest znacznie jaśniejszy MSER+ (lub ciemniejszy
-MSER-) od wszystkich pikseli otaczających region o parametr stabilności
-\todo{sigma}. Ponieważ w trakcie jednego przebiegu algorytmu możemy szukać
-tylko jednego typu regionów, wskazane jest powtórzenie algorytmu przetwarzacjąc 
+które posiadają określone, wyróżniające właściwości, pozwalające na ich
+powtarzalne i trwałe wykrywanie, niezależnie od pewnych, często spotykanych,
+deformacji. Maksymalnie stabilny region ekstremalny jest spójnym segmentem
+obrazu otrzymanym w procesie binaryzacji przez progowanie. Właściwość
+ekstremalności odnosi się do tego, że każdy piksel w danym rejonie jest
+znacznie jaśniejszy (MSER+, lub ciemniejszy, MSER-) od wszystkich pikseli
+otaczających region o parametr $\sigma$ stabilności. Im jest on większy, tym
+mniejsza liczba regionów spełni ten warunek. Zbyt mały próg może jednak
+doprowadzić do zwrócenia wielu niepożądanych fragmentów obrazu, które
+prawdopodobnie nie istnieją, lub istnieją w zupełnie innej formie, na kolejnym
+obrazie w serii.  Ponieważ w trakcie jednego przebiegu algorytmu możemy szukać
+tylko jednego typu regionów, wskazane jest powtórzenie algorytmu przetwarzacjąc
 piksele w odwrotnej kolejności. Regiony te są natomiast maksymalnie stabilne
 ponieważ w procesie binaryzacji ich rozmiar, w pewnym przedziale jasności, nie
-rośnie. MSER-y posiadają szereg pożadanych cech, w tym: 
+rośnie.
+
+Ten rodzaj detektora nie sprawdza się na powierzchniach mało kontrastowych
+(takich jak niebo) oraz na teksturach, gdzie piksele o zbliżonej jasności nie
+tworzą klastrtów, gdyż są przemieszane z innymi, znacznie jaśniejszymi lub
+ciemniejszymi pikselami.
+
+MSER-y posiadają szereg pożadanych cech, w tym:
+
 \begin{enumerate} \item niewrażliwość na zmianę perspektywy, \item obojętność
     na zmianę jasności (oświetlenia), \item liniową złożoność obliczeniową
     (choć w oryginalnej publikacji złożoność prawie liniowa), \item dużą
     dokładność opisywanych krawędzi (w przeciwieństwie do innych algorytmów
-    stosujących smoothing czyli zmiękczanie krawędzi).  
-\end{enumerate}
+    stosujących smoothing czyli zmiękczanie krawędzi).  \end{enumerate}
 
-Nawet po zajściu w/w transformacji, regiony, jeżeli tylko
-spełnią podstawowe kryteria, będą dalej opisywać te same obszary.
+Nawet po zajściu w/w transformacji, regiony, jeżeli tylko spełnią podstawowe
+kryteria, będą dalej opisywać te same obszary.
 
 \section{Algorytm}
 
 Algorytm zaproponowany przez Davida Nistera i Henrika Steweniusa w publikacji
-"Linear Time Maximally Stable Extremal Regions" jako pierwszy posiada, w
-najgorszym przypadku, liniową złożoność obliczeniową. Najważniejszą zmianą w
-stosunku do wcześniejszych implementacji jest kolejność w której iterujemy
-piksele, dzięki czemu struktura obszarów w pamięci reprezentowana jest jako
-zbiór pikseli (a nie lista połączona) W analogii, jasności pikseli tworzą pasma
-górskie, a kolejność odwiedzanych pikseli determinuje woda (ze źródła
-znajdującego się w dowolnym miejscu), spływająca najpierw do dolin tworząc
-jeziora, później unosząc się, łącząc kolejne zbiorniki, w końcu zalewając cały
-obszar (w oryginalnej implementacji poziom wody wzrasta jednomiernie na całej
-powierzchni obrazu, niezależnie od jego topografii).
+"Linear Time Maximally Stable Extremal Regions" \cite{Nister_Stewenius_2008}
+jako pierwszy posiada, w najgorszym przypadku, liniową złożoność obliczeniową.
+Najważniejszą zmianą w stosunku do wcześniejszych implementacji jest kolejność
+w której iterujemy piksele, dzięki czemu struktura obszarów w pamięci
+reprezentowana jest jako zbiór pikseli (a nie lista połączona) W analogii,
+jasności pikseli tworzą pasma górskie, a kolejność odwiedzanych pikseli
+determinuje woda (ze źródła znajdującego się w dowolnym miejscu), spływająca
+najpierw do dolin tworząc jeziora, później unosząc się, łącząc kolejne
+zbiorniki, w końcu zalewając cały obszar (w oryginalnej implementacji poziom
+wody wzrasta jednomiernie na całej powierzchni obrazu, niezależnie od jego
+topografii).
 
 \subparagraph{Podstawowe definicje}
 
@@ -65,45 +77,56 @@ piksele obrazu.
 W zależności od potrzeb, nie musimy pamiętać który piksel należy do którego
 komponentu. Jeżeli w dalszym etapie analizy obrazu wystarczą nam przybliżone
 położenie i kształt obszarów w postaci elips, to każdy region można opisać za
-pomocą sum: $\sum{1}, \sum{x}, \sum{y}, \sum{xx}, \sum{xy}, \sum{yy}$.
+pomocą sum: $\sum{1}, \sum{x}, \sum{y}, \sum{xx}, \sum{xy}, \sum{yy}$. W
+dalszej części pracy zakładam, że interesują nas wszystkie piksele należące do
+regionu, ponieważ jest to jedyny sposób, aby na dalszym etapie uzyskać jego
+kontur.
 
-Maksymalnie stabilnymi regionami ekstremalnymi są te komponenty, których funkcja
-wzrostu osiąga lokalne minimum. \todo{parametry min i max} \todo{dlaczego tekstura zła}
+Zbyt małe regiony stabilne nie są wystarczająco unikalne i z tego powodu nie są
+interesujące, dlatego algorytm bierze pod uwagę tylko te regiony, których
+rozmiar jest większy lub równy do parametru \textit{min}, określającego
+wielkość w pikselach. Z drugiej strony, bardzo duży region ma małe szanse być
+pomocny ze względu na większą wrażliwość na różne przekształcenia. Dodatkowo
+mógłby on wpłynąć niekorzystnie na czas potrzeby do obliczenia deskryptora.
+Parametr \textit{max} określa limit rozmiaru, po przekroczeniu którego nie są
+sprawdzane warunki MSER (region nie może być wynikiem algorytmu).
 
 \subparagraph{Struktury danych}
 
-Implementacja wymaga następujących struktur danych: 
-\begin{itemize} \item Maski binarnej odwiedzonych pikseli.  \item Kolejki
-    priorytetowej granicznych pikseli (ang. boundary pixels) nienależących do
-    sąsiadującego komponentu, z powodu wyższego poziomu jasności. Zostaną one
-    zamapiętane od przetworzenia w dalszej kolejności, poczynając od
-    najciemniejszego.  \item Stosu \textit{C} komponentów wraz z historią jego
-    rozmiarów (niezbędą do stwierdzenia cechy stabilności), oraz poziomem
-    jasności na którym aktualnie się znajduje.  \end{itemize}
+Implementacja wymaga następujących struktur danych: \begin{itemize} \item Maski
+    binarnej odwiedzonych pikseli.  \item Kolejki priorytetowej granicznych
+    pikseli (ang. boundary pixels) nienależących do sąsiadującego komponentu, z
+    powodu wyższego poziomu jasności. Zostaną one zamapiętane od przetworzenia
+    w dalszej kolejności, poczynając od najciemniejszego.  \item Stosu
+    \textit{C} komponentów wraz z historią jego rozmiarów (niezbędą do
+    stwierdzenia cechy stabilności), oraz poziomem jasności na którym aktualnie
+    się znajduje.  \end{itemize}
 
 \subparagraph{Przebieg algorytmu}
 
 \begin{enumerate} \item Wyzeruj maskę binarną odwiedzonych pikseli, kolejkę
-piorytetową i stos komponentów. Włóż na stos pusty komponent z poziomem
-jasności większym niż jakikolwiek możliwy. \item Wybierz dowolny piksel
-źródłowy (np. lewy górny róg) i zapisz go do zmiennej \textit{current\_pixel}.
-Zmień jego status w masce binarnej, a jego jasność zapisz do zmiennej
-\textit{current\_level}. \item Włóż na stos pusty komponent z poziomem jasności
-\textit{current\_level}. \item Odwiedź pozostałe piksele sąsiadujące. Dla
-każdego sąsiada sprawdź czy jest dostępny (tj. czy był odwiedzany) jeżeli nie
-jest, oznacz go jako dostępny i sprawdź czy jego jasność nie jest mniejsza od
-aktualnego poziomu i dodaj go do kolejki priorytetowej. W przeciwnym razie
-dodaj zawartość zmiennej \textit{current\_pixel} do kolejki, a zmiennej
-przypisz sąsiada. Uaktualnij wartość zmniennej \textit{current\_level}. Przejdź
-do punktu 3. \item Dodaj \textit{current\_pixel} do komponentu znajdującego się
-na wierzchu stosu komponentów. \item Pobierz piksel z kolejki priorytetowej.
-Jeżeli w kolejce nie ma żadnych pikseli, zakończ algorytm. Jeżeli jasność
-zwróconego piksela jest równa current\_level, przejdź do punktu 4. \item
-Ponieważ zwrócony piksel znajduje się wyżej (jest jaśniejszy) od
-przetwarzanego komponentu, istnieje możliwość połączenia dwóch lub więcej
-komponentów w jeden. W tym celu przetwarzamy wszystkie komponenty na stosie,
-których poziom jest mniejszy lub równy od obecnego. Dokonuje się tego za pomocą
-pod procedury \textit{ProcessStack}. Po jej wykonaniu wróć do punktu 4. \end{enumerate}
+    piorytetową i stos komponentów. Włóż na stos pusty komponent z poziomem
+    jasności większym niż jakikolwiek możliwy. \item Wybierz dowolny piksel
+    źródłowy (np. lewy górny róg) i zapisz go do zmiennej
+    \textit{current\_pixel}.  Zmień jego status w masce binarnej, a jego
+    jasność zapisz do zmiennej \textit{current\_level}. \item Włóż na stos
+    pusty komponent z poziomem jasności \textit{current\_level}. \item Odwiedź
+    pozostałe piksele sąsiadujące. Dla każdego sąsiada sprawdź czy jest
+    dostępny (tj. czy był odwiedzany) jeżeli nie jest, oznacz go jako dostępny
+    i sprawdź czy jego jasność nie jest mniejsza od aktualnego poziomu i dodaj
+    go do kolejki priorytetowej. W przeciwnym razie dodaj zawartość zmiennej
+    \textit{current\_pixel} do kolejki, a zmiennej przypisz sąsiada. Uaktualnij
+    wartość zmniennej \textit{current\_level}. Przejdź do punktu 3. \item Dodaj
+    \textit{current\_pixel} do komponentu znajdującego się na wierzchu stosu
+    komponentów. \item Pobierz piksel z kolejki priorytetowej.  Jeżeli w
+    kolejce nie ma żadnych pikseli, zakończ algorytm. Jeżeli jasność zwróconego
+    piksela jest równa current\_level, przejdź do punktu 4. \item Ponieważ
+    zwrócony piksel znajduje się wyżej (jest jaśniejszy) od przetwarzanego
+    komponentu, istnieje możliwość połączenia dwóch lub więcej komponentów w
+    jeden. W tym celu przetwarzamy wszystkie komponenty na stosie, których
+    poziom jest mniejszy lub równy od obecnego. Dokonuje się tego za pomocą pod
+    procedury \textit{ProcessStack}. Po jej wykonaniu wróć do punktu 4.
+\end{enumerate}
 
 Przebieg procedury \textit{ProcessStack(new\_pixel\_gray\_level)}
 \begin{enumerate} \item Rozważ komponent z wierzchołka stosu. Ustaw
@@ -111,11 +134,11 @@ Przebieg procedury \textit{ProcessStack(new\_pixel\_gray\_level)}
     drugiego komponentu na stosie. \item Jeżeli new\_pixel\_gray\_level jest
     mniejszy od poziomu drugiego komponentu na stosie, pozwól aby komponent na
     wierzchu stosu miał poziom new\_pixel\_gray\_level i wyjdź z procedury.
-  \item Zdejmij komponent z wierzchu stosu i połącz go z drugim komponentem na stosie z
-    kolei.  Takie połączenie traktuje się jako pojedynczy skok rozmiaru
-    większego z komponentów.  \item Jeżeli new\_pixel\_gray\_level jest większy
-    od poziomu nowego komponentu na wierzchu stosu, przejdź do punktu 1.
-\end{enumerate}
+  \item Zdejmij komponent z wierzchu stosu i połącz go z drugim komponentem na
+    stosie z kolei.  Takie połączenie traktuje się jako pojedynczy skok
+    rozmiaru większego z komponentów.  \item Jeżeli new\_pixel\_gray\_level
+    jest większy od poziomu nowego komponentu na wierzchu stosu, przejdź do
+    punktu 1.  \end{enumerate}
 
 Po każdym wzroście poziomu komponentu o 1, należy sprawdzić czy spełnia on
 kryteria MSER oraz czy jego rozmiar zawiera się w żądanym przedziale. Jeżeli
@@ -132,17 +155,19 @@ Aby obsłużyć większą ilość pikseli (maska jednego pikslela to jeden bit),
 tworzymy tablicę o rozmiarze n*m/32, gdzie n i m to długość i szerokość obrazu,
 przechowującą 32 bitowe maski.
 
-Kolejka priorytetowa to tablica 256 tablic pikseli o jasności odpowiadającej indeksowi w
-pierwszej tablicy. Np. piątym elementem tablicy jest lista pikseli czekających
-na przetworzenie, o jasności 5. Dodatkowo, w celu optymalizacji czasu wykonania,
-wykorzystany został wskaźnik, pierwszego od końca, niepustego elementu, do
-szybkiego dostępu do jego zawartości.
+Kolejka priorytetowa to tablica 256 tablic pikseli o jasności odpowiadającej
+indeksowi w pierwszej tablicy. Np. piątym elementem tablicy jest lista pikseli
+czekających na przetworzenie, o jasności 5. Dodatkowo, w celu optymalizacji
+czasu wykonania, wykorzystany został wskaźnik, pierwszego od końca, niepustego
+elementu, do szybkiego dostępu do jego zawartości.
 
-Stos komponentów jest dynamiczną tablicą 3-elementowych tablic, które
-zawierają: \begin{inparaenum}[\itshape a\upshape)] \item poziom jasności komponentu, \item tablicę
-  pikseli należących do komponentu oraz \item stos zawierający rozmiar
-  komponentu na poprzednich poziomach jasności.  \todo{pozostałe elementy}
-\end{inparaenum}
+Stos komponentów jest tablicą 3-elementowych tablic, które zawierają:
+\begin{inparaenum}[\itshape a\upshape)] \item aktualny poziom jasności
+  komponentu, \item tablicę pikseli należących do komponentu, \item stos
+  zawierający rozmiar komponentu na poprzednich poziomach jasności oraz \item
+  rozmiar poprzedniego MSER, który pochodzi z danego regionu (jeżeli taki
+  istnieje. Służy do wyeliminowania sytuacji w której zwracane są dwa, w dużej
+  części nachodzące na siebie regiony).  \end{inparaenum}
 
 Istnieje wiele możliwości wyznaczania jasności trójkolorowych pikseli.
 Najszybsza metoda polega dodaniu do siebie wartości jednej czwartej części

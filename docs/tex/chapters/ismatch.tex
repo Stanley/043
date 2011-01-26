@@ -4,13 +4,17 @@ Lokalnie pokrewne fragmenty obrazu (ang. Local Affine Frames) łączone w pary,
 służą do ustalania korespondencji pomiędzy dwoma obrazami. Sposób opisu tych
 regionów wpływa na jakość wyników algorytmu dopasowującego. Ze względu na nasze
 wymagania, będziemy potrzebowali takiego sposobu reprezentacji, aby w jak
-najmniejszym stopniu wpływał on na zmianę skali oraz perspektywy obrazu. Z
-pomiarów opublikowanych w publikacji "Shape Guided Maximally Stable Extremal
-Region (MSER) Tracking" wynika, że kontury znacznie dokładniej niż elipsy
-opisują badane regiony i jednocześnie nie wymagają dużych zasobów do obliczenia
-wyznacznika podobieństwa. Najszybszym obecnie algorytmem do dopasowania
-kształtów jest IS-Match przedstawionym przez M. Donoser et al. \cite{ismatch}.
-\todo{jakie są inne korzyści tego rozwiązania}
+najmniejszym stopniu wpływały on na nią zmiana skali oraz perspektywy obrazu. Z
+pomiarów opublikowanych w "Shape Guided Maximally Stable Extremal
+Region (MSER) Tracking" \cite{mser_tracking} wynika, że kontury znacznie
+dokładniej niż elipsy opisują badane regiony i jednocześnie nie wymagają dużych
+zasobów do obliczenia wyznacznika podobieństwa. Najszybszym obecnie algorytmem
+do dopasowania kształtów jest IS-Match przedstawiony przez M. Donoser et al.
+\cite{ismatch}.
+
+Dodatkowym atutem tego rozwiązania jest możliwość wyznaczenia miary
+podobieństwa konturów na podstawie ich fragmentów, wyrażoną przez optimum
+Pareta.
 
 \section{Opis konturu}
 
@@ -20,11 +24,10 @@ braku znaczących deformacji takich jak zgięcia, częściowe przysłonięcia it
 Dopasowanie lokalne pozwala na dopasowanie fragmentów konturu, ale osiąga
 gorsze rezultaty przy dopasowaniu całości. Algorytm IS-Match (ang. Integral
 Shape Match) posiada cechy obu tych podejść. Tak jak przy dopasowaniu
-globalnym, kształt reprezentuje za pomocą punktów próbkowanych z konturu (stała
-odległość między punktami). Opis konturu składa się natomiast z kątów
-siecznych, które zawierają w sobie zarówno lokalne jak i globalne cechy, dzięki
-czemu możliwe jest dopasowanie różnych, przekształconych, zmodyfikowanych, a
-nawet częściowych, wersji konturu.
+globalnym, kształt reprezentuje za pomocą punktów próbkowanych z konturu. Opis
+konturu składa się natomiast z kątów siecznych, które zawierają w sobie zarówno
+lokalne jak i globalne cechy, dzięki czemu możliwe jest dopasowanie różnych,
+przekształconych, zmodyfikowanych, a nawet częściowych, wersji konturu.
 
 Deskryptor jest oparty o kąty $\alpha_{ij}$, które określają układ pomiędzy
 punktami konturu. Kąt $\alpha_{ij}$ znajduje się pomiędzy sieczną z
@@ -40,6 +43,12 @@ odpowiadają kątowi, którego oba ramiona kończą się w tym samym punkcie. Ce
 lokalne konturu zawarte są bliżej diagonali, a globalne dalej. Nie ma znaczenia
 od którego punktu zaczniemy iterację, ponieważ macierz jest cykliczna i możemy
 ją przesuwać wzdłuż diagonali.
+
+Nie jest istotne czy próbkowane punkty na konturze będą oddalone od siebie o
+stałą odległość, czy dla każdego konturu będzie to stała liczba punktów
+niezależnie od ich wielkości. Oba podejścia mają inne cechy i trudno
+stwierdzić, który z tych opisów jest lepszy. W dalszej części pracy założyłem,
+że rozmiar deskryptora jest zależny od długości obwodu konturu.
 
 \todo{Przykłady konturów i ich deskryptorów}
 
@@ -59,7 +68,7 @@ blokiem $A_{2}(m,m)$, poniżej zadanej wartości progowej.
 % \end{equation}
 
 Ponieważ musimy rozważyć każdy, dowolnie duży blok, zaczynający się w dowolnym
-miejscu na diagonali, metoda iteracyjnego odejmowania wszyskich kątów
+miejscu na diagonali, metoda iteracyjnego odejmowania wszystkich kątów
 wymagałaby zbyt dużo mocy obliczeniowej i nie jest stosowana.
 
 Efektywniejszą metodą obliczenia wyznacznika podobieństwa dla wszystkich trzech
@@ -72,21 +81,60 @@ kolejne punkty konturu $A_{1}$ (parametr s):
 \end{equation}
 
 Jeżeli naszym celem jest uzyskanie tylko jednej miary podobieństwa, która
-określi to jak dobrze można dopasować cały mniejszy kontur do tak samo dużego
+określi to jak dobrze można dopasować cały mniejszy kontur, do tak samo dużego
 fragmentu większego, to będzie nią średnia wartość wszystkich elementów
 macierzy $M_{D}^{n}$.
 
 W przeciwnym razie, dla każdej macierzy różnicowej, należy szukać iteracyjnie
 optymalnych wartości parametrów $m$ i $r$. Ponieważ dla jednej wartości
 parametru $s$ możemy uzyskać wiele pasujących fragmentów konturu, należy
-zwrócić wszystkie z nich.
+zwrócić wszystkie z nich. Te dane stanowią później podstawę do obliczenia
+optimum Pareto, za pomocą miar podobieństwa i niepodobieństwa, szczegółowo
+opisanych przez Bronsteina at al. \cite{partial_similarity}.
 
-Na dalszym etapie parowania konturów, oprócz średniej wartości na macierzy
-różnicowej (lub jej fragmentu), powinniśmy także uwzgędnić jej wielkość (im
-pasujący fragment jest większy, tym lepiej).
->>>>>>> 100672a... [wip] + pierwsza część trzeciego rozdziału o dopasowaniu kształtów
-
+Ponieważ przekształcenia innym niż geometryczne nie są przewidziane, liczenie
+współczynnika podobieństwa biorącego pod uwagę takie nietypowe przekształcenia,
+nie zostało zaimplementowane i wszystkie uzyskane przeze mnie wyniki bazują na
+uproszczonej wersji algorytmu.
 
 \section{Algorytm}
 
-Algorytm na wejściu przyjmuje dwa kontury i zwraca dopasowane częściowo kontury i wyznacznik podobieństwa.
+\subparagraph{Struktury danych} 
+
+\begin{itemize} \item Kontur jest tablicą pikseli reprezentowanych przez
+    indeks: $x + y*width$. \item Deskryptor jest jednowymiarową tablicą
+    zawierającą wartości cosinus (wartości z przedziału od -1 do 1).
+\end{itemize}
+
+\subparagraph{Algorytm opisu konturu}: Funkcja na wejściu przyjmuje kontur i
+parametr $\Delta$, a zwraca macierz deskryptora $A$.  
+
+\begin{enumerate} \item Znajdź $N \times N$ dwuelementowych wariacji pikseli
+    konturu. \item Dla każdej pary znajdź cosinus kąta pomiędzy pierwszym
+    punktem $P_{i}$, drugim punktem $P_{j}$ i punktem $P_{j-\Delta}$, podany
+    wzorem: $$A_{i,j} = \frac{c^2 - a^2 - b^2}{-2ab}.$$ Wartości $a$, $b$ i $c$
+    to długości odcinków pomiędzy punktami $P_i$ i $P_j,$ $P_j$ i
+    $P_{j-\Delta}$ oraz $P_{j-\Delta}$ i $P_i$. \end{enumerate}
+
+\subparagraph{Algorytm dopasowania konturów}: Funkcja na wejściu przyjmuje dwa
+deskryptory konturów. Zwraca współczynnik ich podobieństwa oraz indeks punktu,
+na większym z tych dwóch konturów, który odpowiada pierwszemu punktowi na
+mniejszym konturze.
+
+\begin{enumerate} \item Przypisz do zmiennej $A1$ mniejszy z dwóch deskryptorów
+    o wymiarach $M \times M$, a $A2$ większy o rozmiarze $N \times N$. \item
+    Niech $n = 0$ będzie indeksem elementów na diagonali macierzy $A2$. \item
+    Wyznacz macierz różnicową $M_{D}^n$ pomiędzy macierzą $A1$, a macierzą tej
+    samej wielkości, zaczynającej się w punkcie $A2_{n,n}$. Jeżeli wiersz lub
+    kolumna wykracza poza zakres macierzy $A2$, zastąp je elementem o wartości
+    różnicy z dzielenia danego indeksu przez $N$. \item Oblicz sumę wszystkich
+    elementów macierzy i podziel ją przez $M^2$, liczbę wszystkich elementów.
+  \item Zwiększ $n$ o jeden. Jeżeli $n < N$, przejdź do punktu 3. \item Zakończ
+    zwracając parę: \textit{offset} i \textit{min}.  \end{enumerate}
+
+\section{Złożoność obliczeniowa}
+
+Czas potrzebny do wykonania algorytmu zależy w sposób liniowy od liczby punktów
+opisujących kontury. Ten sam kontur można jednak opisać mniejszą lub większą
+liczbą punktów co będzie skutkować zwieszeniem szybkości lub dokładności
+algorytmu. Złożoność obliczeniowa dopasowania wynosi $O(mn)$.
