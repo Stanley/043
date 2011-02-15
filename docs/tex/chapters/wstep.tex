@@ -19,7 +19,9 @@ na niskim poziomie i doskonale spełnia wymagania mojego projektu.
 \section{Definicja problemu}
 
 Rozpoznawanie i śledzenie obiektów to jeden z najbardziej znanych problemów
-wizji komputerowej. Mimo to temat ten ciągle budzi emocje, gdy nowe i lepsze
+wizji komputerowej\footnote{Z języka angielskiego \textit{computer vision}.
+Należy rozumieć jako komputerowa analiza obrazów w celu lepszego ich
+zrozumienia.}. Mimo to temat ten ciągle budzi emocje, gdy nowe i lepsze
 algorytmy zostają opublikowane. Rozwiązania dzielą się na dwa typy oparte na:
 modelowaniu (ang. model-based) i analizie obrazu (ang. appearence-based).
 Problemem tej pierwszej metody jest duży stopień skomplikowania i zawodność
@@ -67,9 +69,19 @@ geometrycznych i pozwala na odnajdywanie częściowych dopasowań. Opiszę algor
 dopasowań. Wyjaśnię dlaczego nie wszystkie cechy tego algorytmu są niezbędne do
 mojej pracy i w jaki sposób można go uprościć zyskując na szybkości wykonania.
 
+\subparagraph{Geometria epipolarna}
+
+W rozdziale 4 zostanie zdefiniowany model geometrii epipolarnej. Przedstawię w
+nim metody odtwarzania geometrii na podstawie układu dwóch zdjęć. Opiszę proces
+budowy linii epipolarnych za pomocą macierzy fundamentalnej, oraz to w jaki
+sposób możliwe jest wyeliminowanie błędnych sparowań regionów, powstałych we
+wcześniejszej fazie przetwarzania. Wyjaśnię w jaki sposób, posiadając model
+geometrii epipolarnej, można odtworzyć wszystkie przekształcenia afiniczne,
+które zaszły między badanymi obrazami.
+
 \subparagraph{Wydajność}
 
-W rozdziale 4 dokonam pomiarów czasu wykonywania i zużycia pamięci
+W rozdziale 5 dokonam pomiarów czasu wykonywania i zużycia pamięci
 zaproponowanej implementacji na wszystkich dostępnych mi silnikach języka
 JavaScript. Testy będą przeprowadzone na domowym komputerze oraz na urządzeniu
 mobilnym.  Zbadam zależność przekazywanych parametrów na jakość i czas
@@ -81,7 +93,7 @@ internecie, głównie o zamkniętym kodzie w językach pre-kompilowanych.
 
 \subparagraph{Wnioski i dalsza praca}
 
-W rozdziale 5, podsumowującym, wskażę mocne i słabe punkty wykorzystanych
+W rozdziale 6, podsumowującym, wskażę mocne i słabe punkty wykorzystanych
 algorytmów. Zaproponuję praktyczne zastosowanie mojej implementacji oraz
 wykażę, że moja implementacja jest wartościowa i z powodzeniem może zostać
 użyta w innych pracach jako gotowa biblioteka programistyczna. Postaram się

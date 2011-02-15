@@ -1,0 +1,103 @@
+\chapter{Geometria epipolarna}
+
+W wizji stereoskopowej (ang. stereo vision) istnieją dwie metody odtwarzania
+trójwymiarowości sceny. Pierwsza, klasyczna metoda, polega na odtworzeniu
+struktury sceny z dwóch (lub więcej) ujęć o znanych parametrach soczewki i
+wielkości matrycy (ang. camera resectioning) oraz położeniu ogniska w
+przestrzeni naszego modelu. Da nam to możliwość oszacowania umiejscowienia
+dowolnego punktu w przestrzeni na płaszczyźnie zdjęcia lub dowolnego punktu w
+przestrzeni na podstawie dwóch linii od obydwóch ognisk przez obie projekcie
+tego punktu. Metoda ta nie sprawdza się w sytuacji gdy parametry kamery się
+zmieniają, np. w wyniku poruszenia lub zmiany otoczenia.  Druga metoda
+polegająca na budowie linii epipolarnych, bliżej odpowiada działaniu systemów
+występujących w naturze. W nieskalibrowanym (nieznanym) układzie, na podstawie
+korelacji punktowych pomiędzy obrazami, wyznacza się macierz fundamentalną
+(ang. fundamental matrix), dzięki której możemy odtworzyć ujętą scenę w
+przestrzeni 3D. 
+
+Obie te metody opierają się na tzw. triangulacji, procesie wyznaczającym punkt
+w przestrzeni trójwymiarowej, na podstawie dwóch lub więcej dwuwymiarowych
+projekcji tego punktu na płaszczyźnie. Mając dany obraz $I$, punkt
+$M=(^{W}X,$$^{W}Y,$$^{W}Z,$$1)^T$ \todo{usunąć spacje} (w układzie współrzędnych
+$W$), musi leżeć na linii prostej, przechodzącej przez ognisko $O_C$ i obraz
+danego punktu $m=(^{I}X,^{I}Y,1)^T$ na płaszczyźnie $I$. Szukany punkt $M$
+znajduje się na przecięciu dwóch takich linii, otrzymanych z dwóch projekcji. 
+
+\todo{współczynnik skali, obrót, perspektywa}
+
+\begin{figure}[h!] \centering
+  \includegraphics[width=1\textwidth]{images/epipolar_geometry.png}
+  \caption{Przykładowa Geometria epipolarna. Schemat przedstawia dwie otworkowe
+  kamery z ogniskami w punktach $O_C$ i $O_{C^\prime}$ widzące punkt $M$.
+  Projekcje tego punktu na płaszczyznach $I$ i $I^\prime$ są oznaczone $m$ i
+  $m^\prime$, epipola $e$ i $e^\prime$, a linie epopolarne $l_{m}$ i
+  $l_m^\prime$. Źródło: \cite{fm_overview} } \end{figure}
+
+\section{Wyznaczanie macierzy fundamentalnej}
+
+Macierz fundamentalna $F$ jest macierzą $3 \times 3$, która określa relacje
+pomiędzy dowolnymi punktami $m$ i $m^\prime$ w wizji stereoskopowej, zgodnie ze
+wzorem: $$m^TFm^\prime = 0\,.$$ H.C. Longuet-Higgins w publikacji "A Computer
+Algorithm for Reconstructing a Scene From Two Projections" \cite{eight_point}
+opublikował tzw.  Eight-Point Algorithm do wyznaczania macierzy fundamentalnej,
+na podstawie minimum ośmiu par punktów $m_i=(u,v,1)$ i
+$m_i^\prime=(u^\prime,v^\prime,1)$.  Każda para, tworzy jedno równanie liniowe,
+zawierające 9 niewiadomych, będących elementami szukanej macierzy fundamentalnej
+$F$: $$uu^\prime F_{11} + uv^\prime F_{21} + uF_{31} + vu^\prime F_{12} +
+vv^\prime F_{22} + vF_{32} + u^\prime F_{13} + v^\prime F_{23} + F_{33} =
+0\,.$$ Układ takich równań w uproszczeniu daje jedno równanie: $$Af=0\,,$$
+gdzie $f$ jest wektorem zwierającym 9 elementów macierzy $F$. Ponieważ $f$ jest
+zdefiniowana dla dowolnego mnożnika, należy nałożyć dodatkowy warunek, że norma
+$\|f\|$ jest równa 1. Z tego wynika, że do rozwiązania tego układu równań
+wystarczy osiem par punktów.
+
+Zaimplementowany przeze mnie algorytm rozwiązywania układów równań to
+uproszczona metoda Jacobi-ego dla macierzy symetrycznych (gdyż macierz $A$
+zawsze jest symetryczna).
+
+Ostatecznym rozwiązaniem jest wektor własny, odpowiadający najmniejszej
+wartości własnej.  Wartości tego dziewięcioelementowego wektora tworzą macierz
+fundamentalną o rozmiarze $3 \times 3$.
+
+\section{Budowa linii epipolarnych}
+
+Algorytm Random Sample Consensus (RANSAC) \cite{ransac} jest estymatorem,
+którego celem jest dopasowanie odpowiedniego modelu do niepewnych
+(doświadczalnych) danych wejściowych, oznaczonych pewnym szumem lub błędem.
+Jednym z zastosowań tego algorytmu jest budowa geometrii epopolarnej.
+Publikacja "Enhancing RANSAC by generalized model optimization"
+\cite{loransac} pokazuje, że jest możliwe odnajdywanie linii
+epipolarnych na podstawie jedynie trzech par korespondujących regionów, ale
+tylko w połączeniu z takimi metodami parującymi, które dopasowują całe
+kształty, z dokładnością do ich obrotu. Dzięki temu będziemy mogli uzyskać trzy
+pary punktowych korespondencji pomiędzy obrazami, dla każdej pary regionów.
+Szacunkowy model geometrii epipolarnej uzyskujemy losując trzy pary regionów
+korespondujących, z których otrzymamy dziewięć par punktów niezbędnych do
+obliczenia macierzy fundamentalnej $F$. Kolejnym krokiem jest przekształcenie
+wszystkich sparowanych punktów z obrazów $I$ i $I^\prime$ macierzą $F$.
+Algorytm LO-RANSAC \cite{loransac} (ulepszony RANSAC) powtarzamy dla obu
+obrazów (na wejściu podając otrzymany zbiór $\mathcal{U}$ transformowanych
+punktów), który przebiega następująco: \begin{enumerate} \item Losuj $m$ ze
+    wszystkich $N$ punktów w zbiorze $\mathcal{U}$ (gdzie $m$ jest minimalną
+    próbą niezbędną do określenia szukanego modelu; dla linii, $m$ jest równe
+    2). \item Zbuduj model na podstawie wylosowanych danych. Linię definiuje
+    równanie: $y - y_1 = (( y_2 - y_1 )\div( x_2 - x_1 )) (x - x_1)$.  \item
+    Sprawdź jak dużo punktów nie odbiega od modelu o więcej niż progowy
+    parametr $\Theta$. Punkty leżące w linii (ang. inliners) oznaczamy
+    $\mathcal{I}$, a $I = |\mathcal{I}|$.  \item Jeżeli jest to najlepszy do
+    tej pory szacunek ($I_k > I_j$ dla każdego $j < k$), zapamiętaj go. W
+    przeciwnym razie przejdź do punktu 6. \item Wylosuj stałą liczbę punktów ze
+    zbioru $I_k$ i przeprowadź optymalizację stosując algorytm IRLS
+    (iteratively reweighted least squares). \item Jeżeli prawdopodobieństwo
+    $\eta = (1-P)^k$, znalezienia lepszego modelu w $k$-tej próbie nie jest
+    mniejsze od wartości progowej $\eta_0$ będącej parametrem, wróć do punktu
+    1.  \end{enumerate}
+
+Przyjmuje się, że para regionów jest spójna z wyznaczonym modelem, jeżeli
+wszystkie jej trzy punkty są spójne. Prawdopodobieństwo $P$ wynosi: $$P =
+\frac{{I \choose m}}{{N \choose m}} = \prod_{j=0}^{m-1}\frac{I - j}{N-j} \,.$$
+
+
+\section{Odtwarzanie przekształceń geometrycznych}
+
+
