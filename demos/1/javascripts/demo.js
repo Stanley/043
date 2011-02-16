@@ -93,7 +93,7 @@ function main(){
         var current_descriptors = mser.map(function(m){return ISMatch.describe(m, descriptor_delta)});
         var matched_pairs = [];
         if(previous_descriptors){
-          var matched_pairs = ISMatch(current_descriptors, previous_descriptors, {
+          matched_pairs = ISMatch(current_descriptors, previous_descriptors, {
             max: threshold,
             //debug: true
           });
@@ -119,22 +119,22 @@ function main(){
         // For each connection
         while(j--){
           var match = matched_pairs[j]
-            if(match){
-              var from;
-              var to;
+          if(match){
+            var from;
+            var to;
 
-              if(previous[match.matches].length > mser[match.from].length){
-                from = previous[match.matches][match.offset];
-                to = mser[match.from][0];
-              } else {
-                from = previous[match.matches][0];
-                to = mser[match.from][match.offset];
-              }
-
-              // Draw a line between two regions
-              ctx.moveTo(from[0], from[1]-5);
-              ctx.lineTo(to[0], regions.height+to[1]);
+            if(previous[match.matches].length >= mser[match.from].length){
+              from = previous[match.matches][match.offset];
+              to = mser[match.from][0];
+            } else {
+              from = previous[match.matches][0];
+              to = mser[match.from][match.offset];
             }
+
+            // Draw a line between two regions
+            ctx.moveTo(from[0], from[1]-5);
+            ctx.lineTo(to[0], regions.height+to[1]);
+          }
         }
 
         previous = mser;
