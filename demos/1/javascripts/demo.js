@@ -115,27 +115,116 @@ function main(){
         ctx.strokeStyle = "rgba(255,0,0,0.5)"
         ctx.beginPath();
 
-        var j = matched_pairs.length
+        // Build fundamental matrix
+        // 9 matching points are required (from 3 region pairs)
+        var eigenvectors = [];
+        var arr = [];
+        var pairs = [];
+
         // For each connection
-        while(j--){
+        //while(j--){
+        var matched_pairs_count = matched_pairs.length
+        for(var j=0; j<matched_pairs_count; j++){
           var match = matched_pairs[j]
           if(match){
             var from;
             var to;
 
+            var s,l; // smaller and larger regions
+
             if(previous[match.matches].length >= mser[match.from].length){
               from = previous[match.matches][match.offset];
               to = mser[match.from][0];
+
+              l = previous[match.matches];
+              s = mser[match.from];
             } else {
               from = previous[match.matches][0];
               to = mser[match.from][match.offset];
+
+              s = previous[match.matches];
+              l = mser[match.from];
             }
 
             // Draw a line between two regions
             ctx.moveTo(from[0], from[1]-5);
             ctx.lineTo(to[0], regions.height+to[1]);
+
+            var mi = Math.floor(j/3); // matrix index
+            var start = j%3*3; // current position on the matrix
+            var k = 3;
+
+            // Step which will give us 3 points
+            var step = Math.round(s.length/4);
+            var bigger = l.length;
+
+            while(k--){
+              // Current offset
+              var pos = step*k;
+
+              // Coordinates of two corresponing points
+              var u1 = s[pos][0],
+                  v1 = s[pos][1],
+                  u2 = l[( pos+match.offset )%bigger][0],
+                  v2 = l[( pos+match.offset )%bigger][1];
+
+              // Remeber this pair
+              pairs.push([u1,v1,u2,v2]);
+
+              arr[start+k] = [u1*u2, u1*v2, u1, v1*u2, v1*v2, v1, u2, v2, 1];
+            }
+
+            if(start == 6){ 
+              // Matrix is complete; find FM
+              console.log(arr)
+              var matrix = new Matrix(arr);
+
+              // Fundamental matrix
+              console.log(JSON.stringify(matrix.t().x(matrix)))
+              var fm = matrix.t().x(matrix).eigenvector()
+              eigenvectors.push(fm)
+
+              // New system of equasions
+              arr = [];
+            }
           }
         }
+
+        eigenvectors.forEach(function(v){
+          var f = new Matrix([
+            [v[0],v[1],v[2]],
+            [v[3],v[4],v[5]],
+            [v[6],v[7],v[8]]
+          ]);
+          console.log(f.arr)
+
+          var canvas2 = document.createElement('canvas')
+          canvas2.height = canvas.height
+          canvas2.width = canvas.width
+
+          var image_context = canvas2.getContext('2d');
+          var data = image_context.createImageData(canvas2.width, canvas2.height);
+          var d = data.data;
+          
+          pairs.forEach(function(pair){
+            // First image
+            var u = new Matrix([ [pair[0], pair[1], 1] ]) // point before
+            var p = f.x(u.t()) // and after transition
+
+            var pos = (u.arr[0][0] + u.arr[0][1]*canvas2.width) << 2;
+            d[pos] = 0
+            d[pos+1] = 0
+            d[pos+2] = 0
+            d[pos+3] = 255
+
+            // Second image
+            var u = new Matrix([ [pair[2], pair[3], 1] ])
+            var p = f.x(u.t())
+          })
+
+          image_context.putImageData(data, 0, 0)
+          li.append(canvas2)
+        })
 
         previous = mser;
         ctx.stroke();
@@ -150,69 +239,8 @@ function main(){
   }
 }
 
-function connect(){
-  console.log(features)
-  var i = features.length
-  var previous;
-  while(i--){
-    var current = features[i];
-    if(previous != undefined){
-      var j = current.length;
-      
-      var connections = document.createElement('canvas');
-      connections.height = 2*320;
-      connections.width = 400;
-      connections.style.position = "absolute";
-      connections.style.left = 0;
-
-      var ctx = connections.getContext('2d');
-      ctx.beginPath();
-
-      // Each region
-      while(j--){
-        var region1 = current[j]
-        var k = previous.length;
-        var min = 0.5;
-        var matched_region;
-        // Each pair
-        while(k--){
-          var region2 = previous[k];
-          var sum = 0;
-          sum += Math.abs(( region1[0] - region2[0] )/400, 2); // x
-          sum += Math.abs(( region1[1] - region2[1] )/720, 2);  // y
-          sum += Math.abs(( region1[2] - region2[2] )/500, 2);  // mass
-          sum += Math.abs(( region1[3] - region2[3] )/20, 2);   
-          sum += Math.abs(( region1[4] - region2[4] )/20, 2);
-          sum += Math.abs(( region1[5] - region2[5] )/255, 2);  // illumination
-
-          if(sum < min){
-            min = sum;
-            matched_region = region2;
-          }
-        }
-        // console.log(min)
-        if(min < 0.5){
-          ctx.moveTo(region1[0], region1[1]);
-          ctx.lineTo(matched_region[0], 320+matched_region[1]);
-          console.log(min, region1, matched_region);
-        }
-      }
-      ctx.stroke();
-      console.log(ctx);
-      $(imgs.find("li").get(i)).append(connections)
-    }
-    previous = current;
-  }
-}
-
 $(document).ready(function() {
   $("#step1").click(function(){
     main()
   })
-
-  $("#step2").click(function(){
-    connect()
-  })
-//  $("#imgs").sortable()  
-//  $("#imgs").disableSelection()
 })
