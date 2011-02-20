@@ -1,11 +1,11 @@
 \chapter{Wstęp}
 
-Eksponenty wzrost popularności urządzeń mobilnych obserwujemy już od wielu lat.
-Do tej pory jednak, mimo że wiele z nich wyposażone jest w kamerę cyfrową,
-praktycznie żadne z nich nie było w stanie przetwarzać obrazu nawet w czasie
-zbliżonym do rzeczywistego. To zmieni się już niedługo, gdyż zgodnie z prawem
-Moore'a moc obliczeniowa układów scalonych podwaja się co 24 miesiące.  Wiele
-programistów nie chce jednak inwestować zbyt dużo energii na pisanie
+Eksponencjalny wzrost popularności urządzeń mobilnych obserwujemy już od wielu
+lat.  Do tej pory jednak, mimo że wiele z nich wyposażone jest w kamerę
+cyfrową, praktycznie żadne z nich nie było w stanie przetwarzać obrazu nawet w
+czasie zbliżonym do rzeczywistego. To zmieni się już niedługo, gdyż zgodnie z
+prawem Moore'a moc obliczeniowa układów scalonych podwaja się co 24 miesiące.
+Wielu programistów nie chce jednak inwestować zbyt dużo energii na pisanie
 skomplikowanych algorytmów na konkretną platformę sprzętową, gdyż udziały w
 rynku nawet największych graczy, zmieniają się bardzo szybko i nie sposób
 przewidzieć która z nich da największe korzyści w przyszłości. Rozwiązania
@@ -27,14 +27,14 @@ modelowaniu (ang. model-based) i analizie obrazu (ang. appearence-based).
 Problemem tej pierwszej metody jest duży stopień skomplikowania i zawodność
 podstawowych operacji takich jak wykrywanie krawędzi. Druga metoda zawodzi
 natomiast, np.  przy zmianie kąta widzenia, gdy zmieniają się proporcje
-wymiarów.  W roku 2002, została opublikowana publikacja opisująca nowatorski
-algorytm eliminujący słabe punkty obu tych rozwiązań. Stepan Obdrzalek i Jiri
-Matas proponują łączenie lokalnych cech obrazu (ang. Local Affine Frames on
-Destinguished Regions) i definiują pojęcie MSER (Maksymalnie stabilnych
-regionów ekstremalnych), które posiadają wiele pożądanych cech brakujących we
+wymiarów.  W roku 2002, został opublikowany nowatorski algorytm eliminujący
+słabe punkty obu tych rozwiązań. Stepan Obdrzalek i Jiri Matas proponują
+łączenie lokalnych cech obrazu (ang. Local Affine Frames on Destinguished
+Regions) i definiują pojęcie MSER (Maksymalnie stabilnych regionów
+ekstremalnych), które posiadają wiele pożądanych cech brakujących we
 wcześniejszych rozwiązaniach.  Kolejnym etapem analizy obrazu jest połączenie
 charakterystycznych regionów (ang. distinguished regions) w pary. Najszybszym
-obecnie algorytmem jest ISMatch opisany w "Efitient Partial Shape Matching of
+obecnie algorytmem jest ISMatch opisany w "Efficient Partial Shape Matching of
 Outer Contours", który dostarcza miarę podobieństwa dwóch konturów. Dopiero
 teraz, mając wiele obszarów obrazu A, wraz z odpowiadającym im dokładnie jednym
 obszarem obrazu B, możemy obliczyć średnie każdego z możliwych przekształceń
@@ -129,7 +129,7 @@ do uzyskania innego celu.
 \section{Dostępne implementacje}
 
 W internecie dostępnych jest kilka bibliotek implementujących algorytmy
-znajdujące lokalne cechy obrazów, wiele z nich jest dostępna wraz z kodem
+znajdujące lokalne cechy obrazów, wiele z nich jest publikowana wraz z kodem
 źródłowym.
 
 \subparagraph{VLFeat \cite{vlfeat}}

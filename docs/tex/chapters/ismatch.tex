@@ -90,9 +90,9 @@ optymalnych wartości parametrów $m$ i $r$. Ponieważ dla jednej wartości
 parametru $s$ możemy uzyskać wiele pasujących fragmentów konturu, należy
 zwrócić wszystkie z nich. Te dane stanowią później podstawę do obliczenia
 optimum Pareto, za pomocą miar podobieństwa i niepodobieństwa, szczegółowo
-opisanych przez Bronsteina at al. \cite{partial_similarity}.
+opisanych przez Bronsteina i innych \cite{partial_similarity}.
 
-Ponieważ przekształcenia innym niż geometryczne nie są przewidziane, liczenie
+Ponieważ przekształcenia inne niż geometryczne nie są przewidziane, liczenie
 współczynnika podobieństwa biorącego pod uwagę takie nietypowe przekształcenia,
 nie zostało zaimplementowane i wszystkie uzyskane przeze mnie wyniki bazują na
 uproszczonej wersji algorytmu.
@@ -112,9 +112,14 @@ parametr $\Delta$, a zwraca macierz deskryptora $A$.
 \begin{enumerate} \item Znajdź $N \times N$ dwuelementowych wariacji pikseli
     konturu. \item Dla każdej pary znajdź cosinus kąta pomiędzy pierwszym
     punktem $P_{i}$, drugim punktem $P_{j}$ i punktem $P_{j-\Delta}$, podany
-    wzorem: $$A_{i,j} = \frac{c^2 - a^2 - b^2}{-2ab}.$$ Wartości $a$, $b$ i $c$
-    to długości odcinków pomiędzy punktami $P_i$ i $P_j,$ $P_j$ i
-    $P_{j-\Delta}$ oraz $P_{j-\Delta}$ i $P_i$. \end{enumerate}
+    wzorem: 
+
+\begin{equation}
+  A_{i,j} = \frac{c^2 - a^2 - b^2}{-2ab}.
+\end{equation}
+
+ Wartości $a$, $b$ i $c$ to długości odcinków pomiędzy punktami $P_i$ i $P_j,$
+ $P_j$ i $P_{j-\Delta}$ oraz $P_{j-\Delta}$ i $P_i$. \end{enumerate}
 
 \subparagraph{Algorytm dopasowania konturów}: Funkcja na wejściu przyjmuje dwa
 deskryptory konturów. Zwraca współczynnik ich podobieństwa oraz indeks punktu,

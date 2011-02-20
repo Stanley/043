@@ -30,29 +30,41 @@ znajduje się na przecięciu dwóch takich linii, otrzymanych z dwóch projekcji
   \caption{Przykładowa Geometria epipolarna. Schemat przedstawia dwie otworkowe
   kamery z ogniskami w punktach $O_C$ i $O_{C^\prime}$ widzące punkt $M$.
   Projekcje tego punktu na płaszczyznach $I$ i $I^\prime$ są oznaczone $m$ i
-  $m^\prime$, epipola $e$ i $e^\prime$, a linie epopolarne $l_{m}$ i
+  $m^\prime$, epipole $e$ i $e^\prime$, a linie epopolarne $l_{m}$ i
   $l_m^\prime$. Źródło: \cite{fm_overview} } \end{figure}
 
 \section{Wyznaczanie macierzy fundamentalnej}
 
 Macierz fundamentalna $F$ jest macierzą $3 \times 3$, która określa relacje
 pomiędzy dowolnymi punktami $m$ i $m^\prime$ w wizji stereoskopowej, zgodnie ze
-wzorem: $$m^TFm^\prime = 0\,.$$ H.C. Longuet-Higgins w publikacji "A Computer
-Algorithm for Reconstructing a Scene From Two Projections" \cite{eight_point}
-opublikował tzw.  Eight-Point Algorithm do wyznaczania macierzy fundamentalnej,
-na podstawie minimum ośmiu par punktów $m_i=(u,v,1)$ i
-$m_i^\prime=(u^\prime,v^\prime,1)$.  Każda para, tworzy jedno równanie liniowe,
-zawierające 9 niewiadomych, będących elementami szukanej macierzy fundamentalnej
-$F$: $$uu^\prime F_{11} + uv^\prime F_{21} + uF_{31} + vu^\prime F_{12} +
-vv^\prime F_{22} + vF_{32} + u^\prime F_{13} + v^\prime F_{23} + F_{33} =
-0\,.$$ Układ takich równań w uproszczeniu daje jedno równanie: $$Af=0\,,$$
+wzorem: 
+
+\begin{equation}
+  m^TFm^\prime = 0\,.
+\end{equation}
+
+H.C. Longuet-Higgins w publikacji "A Computer Algorithm for Reconstructing a
+Scene From Two Projections" \cite{eight_point} opublikował tzw.  Eight-Point
+Algorithm do wyznaczania macierzy fundamentalnej, na podstawie minimum ośmiu
+par punktów $m_i=(u,v,1)$ i $m_i^\prime=(u^\prime,v^\prime,1)$.  Każda para,
+tworzy jedno równanie liniowe, zawierające 9 niewiadomych, będących elementami
+szukanej macierzy fundamentalnej $F$: 
+
+\begin{equation} uu^\prime F_{11} + uv^\prime F_{21} + uF_{31} + vu^\prime
+  F_{12} + vv^\prime F_{22} + vF_{32} + u^\prime F_{13} + v^\prime F_{23} +
+  F_{33} = 0\,.  \end{equation}
+
+Układ takich równań w uproszczeniu daje jedno równanie: 
+
+\begin{equation} Af=0\,, \end{equation}
+
 gdzie $f$ jest wektorem zwierającym 9 elementów macierzy $F$. Ponieważ $f$ jest
 zdefiniowana dla dowolnego mnożnika, należy nałożyć dodatkowy warunek, że norma
 $\|f\|$ jest równa 1. Z tego wynika, że do rozwiązania tego układu równań
 wystarczy osiem par punktów.
 
 Zaimplementowany przeze mnie algorytm rozwiązywania układów równań to
-uproszczona metoda Jacobi-ego dla macierzy symetrycznych (gdyż macierz $A$
+uproszczona metoda Jacobi-ego dla macierzy symetrycznych (gdyż macierz $A^TA$
 zawsze jest symetryczna).
 
 Ostatecznym rozwiązaniem jest wektor własny, odpowiadający najmniejszej
@@ -81,7 +93,7 @@ punktów), który przebiega następująco: \begin{enumerate} \item Losuj $m$ ze
     wszystkich $N$ punktów w zbiorze $\mathcal{U}$ (gdzie $m$ jest minimalną
     próbą niezbędną do określenia szukanego modelu; dla linii, $m$ jest równe
     2). \item Zbuduj model na podstawie wylosowanych danych. Linię definiuje
-    równanie: $y - y_1 = (( y_2 - y_1 )\div( x_2 - x_1 )) (x - x_1)$.  \item
+    równanie: $y - y_1 = (( y_2 - y_1 ) / ( x_2 - x_1 )) (x - x_1)$.  \item
     Sprawdź jak dużo punktów nie odbiega od modelu o więcej niż progowy
     parametr $\Theta$. Punkty leżące w linii (ang. inliners) oznaczamy
     $\mathcal{I}$, a $I = |\mathcal{I}|$.  \item Jeżeli jest to najlepszy do
@@ -94,8 +106,11 @@ punktów), który przebiega następująco: \begin{enumerate} \item Losuj $m$ ze
     1.  \end{enumerate}
 
 Przyjmuje się, że para regionów jest spójna z wyznaczonym modelem, jeżeli
-wszystkie jej trzy punkty są spójne. Prawdopodobieństwo $P$ wynosi: $$P =
-\frac{{I \choose m}}{{N \choose m}} = \prod_{j=0}^{m-1}\frac{I - j}{N-j} \,.$$
+wszystkie jej trzy punkty są spójne. Prawdopodobieństwo $P$ wynosi: 
+
+\begin{equation} P = \frac{{I \choose m}}{{N \choose m}} =
+  \prod_{j=0}^{m-1}\frac{I - j}{N-j} \,.  \end{equation}
+
 
 
 \section{Odtwarzanie przekształceń geometrycznych}

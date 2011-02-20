@@ -27,7 +27,7 @@ rośnie.
 
 Ten rodzaj detektora nie sprawdza się na powierzchniach mało kontrastowych
 (takich jak niebo) oraz na teksturach, gdzie piksele o zbliżonej jasności nie
-tworzą klastrtów, gdyż są przemieszane z innymi, znacznie jaśniejszymi lub
+tworzą klastrów, gdyż są przemieszane z innymi, znacznie jaśniejszymi lub
 ciemniejszymi pikselami.
 
 MSER-y posiadają szereg pożadanych cech, w tym:
@@ -47,8 +47,8 @@ Algorytm zaproponowany przez Davida Nistera i Henrika Steweniusa w publikacji
 "Linear Time Maximally Stable Extremal Regions" \cite{Nister_Stewenius_2008}
 jako pierwszy posiada, w najgorszym przypadku, liniową złożoność obliczeniową.
 Najważniejszą zmianą w stosunku do wcześniejszych implementacji jest kolejność
-w której iterujemy piksele, dzięki czemu struktura obszarów w pamięci
-reprezentowana jest jako zbiór pikseli (a nie lista połączona) W analogii,
+w której iterujemy piksele. Dzięki temu struktura obszarów w pamięci
+reprezentowana jest jako zbiór pikseli (a nie lista połączona). W analogii,
 jasności pikseli tworzą pasma górskie, a kolejność odwiedzanych pikseli
 determinuje woda (ze źródła znajdującego się w dowolnym miejscu), spływająca
 najpierw do dolin tworząc jeziora, później unosząc się, łącząc kolejne
@@ -65,9 +65,9 @@ pikselowi odpowiada także zbiór \textit{N(x)} od 2 do 4 pikseli z nim
 sąsiadujących. Ścieżka z \textit{x} do \textit{y} jest ciągiem sąsiadujących ze
 sobą pikseli zaczynającym się w \textit{x} i kończącym się na \textit{y}.
 Spójny zbiór \textit{X} jest zbiorem pikseli posiadającymi ścieżki każdy z
-każdym. Zbiór z progiem \textit{y} jest zbiorem pikseli których jasność nie
-przekracza wartości y. Wraz ze zwiększaniem progu \textit{y} (zwiększając
-akceptowalną jasność pikseli) powstają nowe spóje zbiory, które tworzą drzewo
+każdym. Zbiór z progiem $\Theta$ jest zbiorem pikseli których jasność nie
+przekracza wartości $\Theta$. Wraz ze zwiększaniem progu \textit{y} (zwiększając
+akceptowalną jasność pikseli) powstają nowe spójne zbiory, które tworzą drzewo
 komponentów (ang. component tree). Liśćmi tego drzewa są tzw. minima, czyli
 komponenty o pikselach o takiej samej jasności, a węzłami komponenty powstałe
 po złączeniu dwóch innych komponentów, w wyniku procesu podnoszenia progu y do
@@ -87,7 +87,7 @@ interesujące, dlatego algorytm bierze pod uwagę tylko te regiony, których
 rozmiar jest większy lub równy do parametru \textit{min}, określającego
 wielkość w pikselach. Z drugiej strony, bardzo duży region ma małe szanse być
 pomocny ze względu na większą wrażliwość na różne przekształcenia. Dodatkowo
-mógłby on wpłynąć niekorzystnie na czas potrzeby do obliczenia deskryptora.
+mógłby on wpłynąć niekorzystnie na czas potrzebny do obliczenia deskryptora.
 Parametr \textit{max} określa limit rozmiaru, po przekroczeniu którego nie są
 sprawdzane warunki MSER (region nie może być wynikiem algorytmu).
 
@@ -124,11 +124,11 @@ Implementacja wymaga następujących struktur danych: \begin{itemize} \item Mask
     zwrócony piksel znajduje się wyżej (jest jaśniejszy) od przetwarzanego
     komponentu, istnieje możliwość połączenia dwóch lub więcej komponentów w
     jeden. W tym celu przetwarzamy wszystkie komponenty na stosie, których
-    poziom jest mniejszy lub równy od obecnego. Dokonuje się tego za pomocą pod
-    procedury \textit{ProcessStack}. Po jej wykonaniu wróć do punktu 4.
+    poziom jest mniejszy lub równy od obecnego. Dokonuje się tego za pomocą
+    podprocedury \textit{ProcessStack}. Po jej wykonaniu wróć do punktu 4.
 \end{enumerate}
 
-Przebieg procedury \textit{ProcessStack(new\_pixel\_gray\_level)}
+Przebieg podprocedury \textit{ProcessStack(new\_pixel\_gray\_level)}
 \begin{enumerate} \item Rozważ komponent z wierzchołka stosu. Ustaw
     current\_level na mniejszą z wartości: new\_pixel\_gray\_level i poziomu
     drugiego komponentu na stosie. \item Jeżeli new\_pixel\_gray\_level jest
@@ -151,7 +151,7 @@ Maskę binarną w języku JavaScript można przechowywać w zmiennej typu Intege
 która składa się z 32 bitów (tak naprawdę JavaScript nie rozróżnia liczb
 całkowitych od zmiennoprzecinkowych, gdyż stosuje jeden standard IEEE 754, ale
 niektóre operacje, w tym binarne, działają jedynie na pierwszych 32 bitach).
-Aby obsłużyć większą ilość pikseli (maska jednego pikslela to jeden bit),
+Aby obsłużyć większą liczbę pikseli (maska jednego pikslela to jeden bit),
 tworzymy tablicę o rozmiarze n*m/32, gdzie n i m to długość i szerokość obrazu,
 przechowującą 32 bitowe maski.
 
