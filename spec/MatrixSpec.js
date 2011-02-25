@@ -6,11 +6,23 @@ describe('Matrix', function(){
     expect(transposed).toEqual(new Matrix([[1,4,7], [2,5,8], [3,6,9]]));
   });
 
+  it('should transpose vectors as well', function(){
+    var matrix = new Matrix([[1,2,3]]);
+    var transposed = matrix.t();
+    expect(transposed).toEqual(new Matrix([[1], [2], [3]]));
+  });
+
   it('should be multipliable', function(){
     var matrix = new Matrix([[1,2,3], [4,5,6], [7,8,9]]);
     var multiplayed = matrix.x(new Matrix([[1,1,1], [1,1,1], [1,1,1]]));
     expect(multiplayed).toEqual(new Matrix([[6,6,6], [15,15,15], [24,24,24]]));
   });
+
+  it('should multiply matrix by vector', function(){
+    var matrix = new Matrix([[1,2,3], [4,5,6], [7,8,9]]);
+    var multiplayed = matrix.x(new Matrix([[1], [1], [1]]));
+    expect(multiplayed).toEqual(new Matrix([[6], [15], [24]]));
+  })
 
   it('should have eigenvalues', function(){
     var matrix = new Matrix([[1,0,1], [0,1,0], [1,0,1]]);

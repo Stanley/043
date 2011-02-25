@@ -1,3 +1,5 @@
+"use strict";
+
 var imgs = $('#imgs');
 var features = [];
 
@@ -13,16 +15,16 @@ function main(){
       maximum = parseInt($("#max").attr("value")),
       set = $("#set").attr("value"),
       res = $("#res").attr("value"),
-      sample = parseInt($("#sample").attr("value"))
+      sample = parseInt($("#sample").attr("value")),
       descriptor_delta = parseInt($("#descriptor_delta").attr("value")),
-      threshold = parseInt($("#threshold").attr("value")),
+      threshold = parseInt($("#threshold").attr("value"));
 
   $("#imgs").empty()
 
   var previous_descriptors;
   var previous; // first point of the contour of previous region
 
-  for(var i=1; i<6; i++){
+  for(var i=1; i<3; i++){
 
     var img = new Image();
     img.rel = i;
@@ -88,7 +90,7 @@ function main(){
         }
 
         // Find corespondences between msers
-        console.time("ismatch");
+        console.profile("ismatch");
 
         var current_descriptors = mser.map(function(m){return ISMatch.describe(m, descriptor_delta)});
         var matched_pairs = [];
@@ -101,7 +103,7 @@ function main(){
 
         previous_descriptors = current_descriptors;
 
-        console.timeEnd("ismatch");
+        console.profileEnd("ismatch");
 
         // Prepare to draw regions' connections
         var connections = document.createElement('canvas');
@@ -115,82 +117,114 @@ function main(){
         ctx.strokeStyle = "rgba(255,0,0,0.5)"
         ctx.beginPath();
 
-        // Build fundamental matrix
-        // 9 matching points are required (from 3 region pairs)
-        var eigenvectors = [];
-        var arr = [];
-        var pairs = [];
-
         // For each connection
+        var matched_pairs_count = matched_pairs.length;
+        var pairs = Array(matched_pairs_count*3);
+        var centroid_a = [0, 0], // avg. x & y of previous image
+            centroid_b = [0, 0]; // avg. x & y of current image
+
         //while(j--){
-        var matched_pairs_count = matched_pairs.length
         for(var j=0; j<matched_pairs_count; j++){
           var match = matched_pairs[j]
           if(match){
-            var from;
-            var to;
-
-            var s,l; // smaller and larger regions
+            var from, to,
+                s, l, // smaller and larger regions
+                shrinked; // true if current region is smaller
 
             if(previous[match.matches].length >= mser[match.from].length){
-              from = previous[match.matches][match.offset];
-              to = mser[match.from][0];
-
               l = previous[match.matches];
               s = mser[match.from];
+              shrinked = true;
             } else {
-              from = previous[match.matches][0];
-              to = mser[match.from][match.offset];
-
               s = previous[match.matches];
               l = mser[match.from];
             }
 
+            // Shift larger region by match.offset
+            l = l.slice(match.offset).concat( l.slice(0, match.offset-1) );
+
             // Draw a line between two regions
-            ctx.moveTo(from[0], from[1]-5);
-            ctx.lineTo(to[0], regions.height+to[1]);
+            ctx.moveTo(s[0][0], regions.height+s[0][1]);
+            ctx.lineTo(l[0][0], l[0][1]);
 
-            var mi = Math.floor(j/3); // matrix index
-            var start = j%3*3; // current position on the matrix
+            //var mi = Math.floor(j/3); // matrix index
+
+            // number of points extracted from each region
             var k = 3;
-
-            // Step which will give us 3 points
+            // Step which will give us k points
             var step = Math.round(s.length/4);
-            var bigger = l.length;
 
             while(k--){
               // Current offset
               var pos = step*k;
+              // Point from previous region first
+              var pair = shrinked ? [l[pos], s[pos]] : [s[pos], l[pos]];
+              pairs[j*3+k] = pair
 
-              // Coordinates of two corresponing points
-              var u1 = s[pos][0],
-                  v1 = s[pos][1],
-                  u2 = l[( pos+match.offset )%bigger][0],
-                  v2 = l[( pos+match.offset )%bigger][1];
+              // Accumulate coordinates
+              centroid_a[0] += pair[0][0];
+              centroid_a[1] += pair[0][1];
 
-              // Remeber this pair
-              pairs.push([u1,v1,u2,v2]);
-
-              arr[start+k] = [u1*u2, u1*v2, u1, v1*u2, v1*v2, v1, u2, v2, 1];
-            }
-
-            if(start == 6){ 
-              // Matrix is complete; find FM
-              console.log(arr)
-              var matrix = new Matrix(arr);
-
-              // Fundamental matrix
-              console.log(JSON.stringify(matrix.t().x(matrix)))
-              var fm = matrix.t().x(matrix).eigenvector()
-              eigenvectors.push(fm)
-
-              // New system of equasions
-              arr = [];
+              centroid_b[0] += pair[1][0];
+              centroid_b[1] += pair[1][1];
             }
           }
         }
 
+        var j = pairs.length;
+
+        // Calculate centroids
+        centroids = [
+          centroid_a.map(function(x){ return Math.round(x/j) }),
+          centroid_b.map(function(x){ return Math.round(x/j) })
+        ];
+
+        // Find avg. distance from centroid on both pictures
+        var distance = [0, 0];
+        // Normalize coordinates
+        while(j--){
+          var hypot = function(x,y){ return Math.sqrt(x*x + y*y) || 0 }
+          var pair = pairs[j].map(function(point, k){ return [point[0]-centroids[k][0], point[1]-centroids[k][1]] });
+
+          // Accumulate distances
+          distance = distance.map(function(sum, k){ return sum + hypot.apply(this, pair[k]) });
+        }
+
+        var j = pairs.length;
+        pairs.shuffle();
+        distance = distance.map(function(x){ return Math.round(x/j) });
+
+        // Build fundamental matrix
+        // 9 matching points are required (from 3 region pairs)
+        var eigenvectors = [];
+        var rows = 8;
+        j = Math.floor( j/rows );
+        while(j--){
+
+          // Calculate fundamental matrix from `rows` points
+          var k = rows;
+          var arr = [];
+          while(k--){
+            // Choose random pair
+            var pair = pairs[j*rows + k];
+            // Coordinates of two corresponing points
+            var u1 = pair[0][0]/distance[0],
+                v1 = pair[0][1]/distance[0],
+                u2 = pair[1][0]/distance[1],
+                v2 = pair[1][1]/distance[1];
+
+            arr[k] = [u1*u2, u1*v2, u1, v1*u2, v1*v2, v1, u2, v2, 1];
+            console.log(arr[k])
+          }
+          
+          var matrix = new Matrix(arr);
+          eigenvectors.push(matrix.t().x(matrix).eigenvector())
+        }
+
+        // Draw one epipolar line per each Fx
         eigenvectors.forEach(function(v){
+
+          // Fundamental matrix Fx
           var f = new Matrix([
             [v[0],v[1],v[2]],
             [v[3],v[4],v[5]],
@@ -208,10 +242,11 @@ function main(){
           
           pairs.forEach(function(pair){
             // First image
-            var u = new Matrix([ [pair[0], pair[1], 1] ]) // point before
+            var u = new Matrix([ [pair[0][0]/distance[0], pair[0][1]/distance[0], 1] ]) // point before
             var p = f.x(u.t()) // and after transition
 
-            var pos = (u.arr[0][0] + u.arr[0][1]*canvas2.width) << 2;
+            var x = Math.round(p.arr[0][0]*distance[0] + centroids[0][0] ) , y = Math.round(p.arr[1][0]*distance[0] + centroids[0][1] ) 
+            var pos = (x + y*canvas2.width) << 2;
             d[pos] = 0
             d[pos+1] = 0
             d[pos+2] = 0
