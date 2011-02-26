@@ -69,6 +69,21 @@ function main(){
           d[pos+3] = 255;
         }
 
+        // Epopolar lines canvas
+        var epipolarConetext = [];
+        var epipolar = [
+          document.createElement('canvas'),
+          document.createElement('canvas')
+        ];
+        epipolar.forEach(function(e){
+          e.height = canvas.height;
+          e.width = canvas.width;
+          var c = e.getContext('2d');
+          c.strokeStyle = "rgba(0,0,255,1)";
+          c.beginPath();
+          epipolarConetext.push(c);
+        })
+
         // Draw regions' sampled contours
         var j = mser.length;
         while(j--){
@@ -106,16 +121,16 @@ function main(){
         console.profileEnd("ismatch");
 
         // Prepare to draw regions' connections
-        var connections = document.createElement('canvas');
-        connections.height = regions.height*2;
-        connections.width = regions.width;
-        connections.style.position = "absolute";
-        connections.style.left = 0;
-        connections.style.top = -regions.height+"px";
+        //var connections = document.createElement('canvas');
+        //connections.height = regions.height*2;
+        //connections.width = regions.width;
+        //connections.style.position = "absolute";
+        //connections.style.left = 0;
+        //connections.style.top = -regions.height+"px";
 
-        var ctx = connections.getContext('2d');
-        ctx.strokeStyle = "rgba(255,0,0,0.5)"
-        ctx.beginPath();
+        //var ctx = connections.getContext('2d');
+        //ctx.strokeStyle = "rgba(255,0,0,0.5)"
+        //ctx.beginPath();
 
         // For each connection
         var matched_pairs_count = matched_pairs.length;
@@ -144,8 +159,8 @@ function main(){
             l = l.slice(match.offset).concat( l.slice(0, match.offset-1) );
 
             // Draw a line between two regions
-            ctx.moveTo(s[0][0], regions.height+s[0][1]);
-            ctx.lineTo(l[0][0], l[0][1]);
+            //ctx.moveTo(s[0][0], regions.height+s[0][1]);
+            //ctx.lineTo(l[0][0], l[0][1]);
 
             //var mi = Math.floor(j/3); // matrix index
 
@@ -214,7 +229,6 @@ function main(){
                 v2 = pair[1][1]/distance[1];
 
             arr[k] = [u1*u2, u1*v2, u1, v1*u2, v1*v2, v1, u2, v2, 1];
-            console.log(arr[k])
           }
           
           var matrix = new Matrix(arr);
@@ -230,7 +244,6 @@ function main(){
             [v[3],v[4],v[5]],
             [v[6],v[7],v[8]]
           ]);
-          console.log(f.arr)
 
           var canvas2 = document.createElement('canvas')
           canvas2.height = canvas.height
@@ -239,36 +252,50 @@ function main(){
           var image_context = canvas2.getContext('2d');
           var data = image_context.createImageData(canvas2.width, canvas2.height);
           var d = data.data;
+
+          // Points of interest to be transformed with Fx (both images)
+          var images_points = [[],[]]; // TODO WTF?? OMG?! WHY? FYI
           
-          pairs.forEach(function(pair){
-            // First image
-            var u = new Matrix([ [pair[0][0]/distance[0], pair[0][1]/distance[0], 1] ]) // point before
-            var p = f.x(u.t()) // and after transition
+          images_points.forEach(function(points, k){
+            pairs.forEach(function(pair){
+              
+              var u = new Matrix([ [pair[k][0]/distance[0], pair[k][1]/distance[0], 1] ]) // point before
+              var p = f.x(u.t()) // and after transition
 
-            var x = Math.round(p.arr[0][0]*distance[0] + centroids[0][0] ) , y = Math.round(p.arr[1][0]*distance[0] + centroids[0][1] ) 
-            var pos = (x + y*canvas2.width) << 2;
-            d[pos] = 0
-            d[pos+1] = 0
-            d[pos+2] = 0
-            d[pos+3] = 255
+              var x = Math.round(p.arr[0][0]*distance[0] + centroids[0][0] ),
+                  y = Math.round(p.arr[1][0]*distance[0] + centroids[0][1] ) 
 
-            // Second image
-            var u = new Matrix([ [pair[2], pair[3], 1] ])
-            var p = f.x(u.t())
-          })
+              points.push([x,y]);
+
+              //var pos = (x + y*canvas2.width) << 2;
+              //d[pos] = 0
+              //d[pos+1] = 0
+              //d[pos+2] = 0
+              //d[pos+3] = 255
+            })
+
+            // Find best fit for transformed points
+            var model = (new Ransac(points).best_model);
+            if(model){
+              // Draw polyline
+              epipolarConetext[k].moveTo(0, model[0]);
+              epipolarConetext[k].lineTo(canvas.width, model[0] + model[1]*canvas.width );
+            }
+          });
 
           image_context.putImageData(data, 0, 0)
-          li.append(canvas2)
         })
 
         previous = mser;
-        ctx.stroke();
 
         regionsConetext.putImageData(regionsData, 0, 0)
         li.append(regions)
-        li.append(connections)
         imgs.append(li)
 
+        epipolar.forEach(function(e,k){
+          epipolarConetext[k].stroke();
+          li.append(e);
+        })
       })
       .attr('src', 'images/'+set+'/'+res+'/img'+i+'.png')
   }

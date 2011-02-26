@@ -181,6 +181,10 @@ ul{
   color: #bbb
 }
 
+canvas {
+  border: 1px black solid
+}
+
 .descriptor > canvas{
   border: 2px red solid
 }
