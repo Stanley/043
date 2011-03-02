@@ -18,12 +18,10 @@ przestrzeni 3D.
 Obie te metody opierają się na tzw. triangulacji, procesie wyznaczającym punkt
 w przestrzeni trójwymiarowej, na podstawie dwóch lub więcej dwuwymiarowych
 projekcji tego punktu na płaszczyźnie. Mając dany obraz $I$, punkt
-$M=(^{W}X,$$^{W}Y,$$^{W}Z,$$1)^T$ \todo{usunąć spacje} (w układzie współrzędnych
+$M=($$^{W}X,$$^{W}Y,$$^{W}Z,$$1)^T$ (w układzie współrzędnych
 $W$), musi leżeć na linii prostej, przechodzącej przez ognisko $O_C$ i obraz
 danego punktu $m=(^{I}X,^{I}Y,1)^T$ na płaszczyźnie $I$. Szukany punkt $M$
 znajduje się na przecięciu dwóch takich linii, otrzymanych z dwóch projekcji. 
-
-\todo{współczynnik skali, obrót, perspektywa}
 
 \begin{figure}[h!] \centering
   \includegraphics[width=1\textwidth]{images/epipolar_geometry.png}
@@ -31,7 +29,7 @@ znajduje się na przecięciu dwóch takich linii, otrzymanych z dwóch projekcji
   kamery z ogniskami w punktach $O_C$ i $O_{C^\prime}$ widzące punkt $M$.
   Projekcje tego punktu na płaszczyznach $I$ i $I^\prime$ są oznaczone $m$ i
   $m^\prime$, epipole $e$ i $e^\prime$, a linie epopolarne $l_{m}$ i
-  $l_m^\prime$. Źródło: \cite{fm_overview} } \end{figure}
+  $l_m^\prime$. Macierz $^C K_C$ przekształca punkt $O_{C^\prime}$ w $O_C$ (o kąt i przesunięcie). Źródło: \cite{fm_overview} } \end{figure}
 
 \section{Wyznaczanie macierzy fundamentalnej}
 
@@ -111,8 +109,67 @@ wszystkie jej trzy punkty są spójne. Prawdopodobieństwo $P$ wynosi:
 \begin{equation} P = \frac{{I \choose m}}{{N \choose m}} =
   \prod_{j=0}^{m-1}\frac{I - j}{N-j} \,.  \end{equation}
 
-
-
 \section{Odtwarzanie przekształceń geometrycznych}
 
+Sama macierz fundamentalna nie wystarczy do wyznaczenia w przestrzeni ani
+położenia kamery, ani punktów korespondującym punktom na płaszczyźnie. Aby
+jednoznacznie określić punkty w przestrzeni, konieczne są punkty zaczepne.
+Według autorów "Stereo from Uncalibrated Cameras" \cite{stereo} może być to
+dowolna para macierzy położenia kamer (ang. camera matrices), która jest
+zdefiniowana przez:
 
+\begin{equation}
+  P_1 = (I\; |\; 0);\quad P_2 = (U diag(r,s,\gamma) E V^T\; |\; U(0,0,\gamma)^T).
+\end{equation}
+
+W celu ich znalezienia, konieczne jest dokonanie rozkładu według wartości
+osobliwych (ang. singular value decomposition) macierzy fundamentalnej $F$, w
+formie $F = UDV^T$, gdzie $D$ jest macierzą diagonalną $diag(r,s,q)$. Macierze
+$P$ nie mają na celu dokładnego określenia rzeczywistego położenia kamer w
+przestrzeni, a jedynie skojarzenie ich położenia z trójwymiarową transformacją
+projekcji na płaszczyźnie.
+
+Zgodnie z \cite{stereo} macierz $F$ można również rozpisać w następujący sposób:
+
+\begin{equation}
+  F = RS;\quad R = Udiag(r,s,\gamma)EV^T;\quad S = VZV^T ,
+\end{equation}
+gdzie 
+\begin{equation}
+  E = \begin{pmatrix} 
+    0 &-1 & 0 \\
+    1 & 0 & 0 \\
+    0 & 0 & 1
+  \end{pmatrix}
+  ;\quad
+  Z = \begin{pmatrix} 
+    0 &-1 & 0 \\
+    1 & 0 & 0 \\
+    0 & 0 & 0
+  \end{pmatrix},
+\end{equation}
+a $R$ jest macierzą rotacji.
+
+\section{Odnajdywanie punktów w przestrzeni trójwymiarowej}
+
+Współrzędne punktu ${\bf x_i} = (x_i, y_i, z_i) $ w przestrzeni, znajdują się
+na przecięciu dwóch półprostych wyprowadzonych z ognisk obiektywu i
+przechodzących przez dwuwymiarowe projekcje $u_i = (u_i, v_i, 1)^T$ i
+$u_i\prime = (u_i\prime, v_i\prime, 1)^T$. Przybliżone położenie tego punktu
+można obliczyć w następujący sposób: 
+
+\begin{equation} (w_i u_i, w_i v_i, w_i)^T = P_1(x_i, y_i, z_i, 1)^T
+\end{equation} \begin{equation} (w_i\prime u_i\prime, w_i\prime v_i\prime,
+  w_i\prime)^T = P_2(x_i, y_i, z_i, 1)^T \end{equation} Jest to układ sześciu
+  równań z pięcioma niewiadomymi: $x_i, y_i, z_i, w_i$ i $w_i\prime$. Da on
+  rozwiązanie z dokładnością do przekształceń rzutu.  Dokładne rozwiązanie
+  (absolutne położenie) wymaga co najmniej ośmiu punktów zaczepnych w
+  przestrzeni (ang. ground control points).
+
+\section{Podsumowanie}
+
+Uzyskana przez nas rekonstrukcja opiera się na projekcji i nie jest tzw.
+rekonstrukcją euklidesową. To podejście pozwala na pomiar tzw. niezmienników
+projekcji (ang. projective invariants) takich jak dwustosunek (ang.
+cross-ratio) i przecięcia linii. Aby móc dokonać pomiarów kątów i odległości,
+konieczna będzie kalibracja kamer. Problem ten został pominięty w tej pracy.
