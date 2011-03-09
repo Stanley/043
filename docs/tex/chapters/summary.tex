@@ -1,0 +1,30 @@
+\chapter{Wnioski i dalsza praca}
+
+Celem mojej pracy było stworzenie uniwersalnej biblioteki implementującej
+podstawowe algorytmy z dziedziny wizji komputerowej. Aktualny stan pracy
+pozwala na stworzenie prostych demonstracji i jest tylko zalążkiem kodu, który
+mógłby być w przyszłości wykorzystywany w gotowych aplikacjach produkcyjnych.
+
+Aby móc dokonać częściowej rekonstrukcji geometrycznej sceny z dwóch obrazów,
+konieczne było znalezienie par pikseli, które (prawdopodobnie) ze sobą
+korespondują. Ponieważ pojedynczy piksel jest zbyt trywialny żeby go porównywać
+do czegokolwiek, musieliśmy porównywać całe regiony pikseli. W tym celu
+konieczne było znajdowanie takich regionów, które są zarówno charakterystyczne
+(dla danej sceny) i stabilne (niezależnie od zmiennych warunków) oraz łatwe w
+znalezieniu. Rezultatem naszych obliczeń były mi. macierze przekształceń, które
+pomnożone przez dowolny punkt, zwrócą korespondujący punkt na drugim obrazie.
+Jest tak dlatego, ponieważ macierze te zawierają w sobie informacje o
+przekształceniach, które zaszły między jednym a drugim obrazem.
+
+Omówiona część teoretyczna jest zaledwie wstępem do szerokiego zagadnienia
+wizji komputerowej.
+
+Kolejnym elementem mojej pracy była implementacja wszystkich opisanych
+algorytmów (MSER, IS-MATCH, RANSAC) w języku JavaScript. Demonstracja działania,
+wraz z graficznym inferface-m wszystkich parametrów algorytmów w formie strony
+HTML, jest integralną częścią tego projektu. 
+
+Dalsze prace nad implementacją powinny być skupione przede wszystkim nad
+wydajnością. Warto zauważyć, że wszystkie opisane algorytmy są trywialne w
+zrównolegleniu, ale ich implementacje wciąż nie wykorzystuje potencjału wielu
+rdzeni procesora.
