@@ -1,7 +1,7 @@
 \chapter{Maksymalnie stabilne regiony ekstremalne}
 
 Maksymalnie Stabilne Regiony Ekstremalne (MSER) po raz pierwszy zostały opisane
-w publikacji Jiri Matasa pt. "Robust Wide Baseline Stereo from Maximally Stable
+w publikacji J. Matasa i innych pt. "Robust Wide Baseline Stereo from Maximally Stable
 Extremal Regions" \cite{matas02} i znajdują zastosowanie np. w rozpoznawaniu i
 śledzeniu obiektów, składaniu fragmentów obrazu oraz trójwymiarowej
 rekonstrukcji otoczenia.
@@ -15,7 +15,7 @@ deformacji. Maksymalnie stabilny region ekstremalny jest spójnym segmentem
 obrazu otrzymanym w procesie binaryzacji przez progowanie. Właściwość
 ekstremalności odnosi się do tego, że każdy piksel w danym rejonie jest
 znacznie jaśniejszy (MSER+, lub ciemniejszy, MSER-) od wszystkich pikseli
-otaczających region o parametr $\sigma$ stabilności. Im jest on większy, tym
+otaczających region o parametr stabilności $\sigma$. Im jest on większy, tym
 mniejsza liczba regionów spełni ten warunek. Zbyt mały próg może jednak
 doprowadzić do zwrócenia wielu niepożądanych fragmentów obrazu, które
 prawdopodobnie nie istnieją, lub istnieją w zupełnie innej formie, na kolejnym
@@ -77,10 +77,10 @@ piksele obrazu.
 W zależności od potrzeb, nie musimy pamiętać który piksel należy do którego
 komponentu. Jeżeli w dalszym etapie analizy obrazu wystarczą nam przybliżone
 położenie i kształt obszarów w postaci elips, to każdy region można opisać za
-pomocą sum: $\sum{1}, \sum{x}, \sum{y}, \sum{xx}, \sum{xy}, \sum{yy}$. W
-dalszej części pracy zakładam, że interesują nas wszystkie piksele należące do
-regionu, ponieważ jest to jedyny sposób, aby na dalszym etapie uzyskać jego
-kontur.
+pomocą sum pikseli $(x,y)$: $\sum{1}, \sum{x}, \sum{y}, \sum{xx}, \sum{xy}, \sum{yy}$,
+jednoznacznie opisujących elipsę. W dalszej części pracy zakładam, że
+interesują nas wszystkie piksele należące do regionu, ponieważ jest to jedyny
+sposób, aby na dalszym etapie uzyskać jego kontur.
 
 Zbyt małe regiony stabilne nie są wystarczająco unikalne i z tego powodu nie są
 interesujące, dlatego algorytm bierze pod uwagę tylko te regiony, których
@@ -96,7 +96,7 @@ sprawdzane warunki MSER (region nie może być wynikiem algorytmu).
 Implementacja wymaga następujących struktur danych: \begin{itemize} \item Maski
     binarnej odwiedzonych pikseli.  \item Kolejki priorytetowej granicznych
     pikseli (ang. boundary pixels) nienależących do sąsiadującego komponentu, z
-    powodu wyższego poziomu jasności. Zostaną one zamapiętane od przetworzenia
+    powodu wyższego poziomu jasności. Zostaną one zapamiętane od przetworzenia
     w dalszej kolejności, poczynając od najciemniejszego.  \item Stosu
     \textit{C} komponentów wraz z historią jego rozmiarów (niezbędą do
     stwierdzenia cechy stabilności), oraz poziomem jasności na którym aktualnie
@@ -113,37 +113,86 @@ Implementacja wymaga następujących struktur danych: \begin{itemize} \item Mask
     pusty komponent z poziomem jasności \textit{current\_level}. \item Odwiedź
     pozostałe piksele sąsiadujące. Dla każdego sąsiada sprawdź czy jest
     dostępny (tj. czy był odwiedzany) jeżeli nie jest, oznacz go jako dostępny
-    i sprawdź czy jego jasność nie jest mniejsza od aktualnego poziomu i dodaj
-    go do kolejki priorytetowej. W przeciwnym razie dodaj zawartość zmiennej
-    \textit{current\_pixel} do kolejki, a zmiennej przypisz sąsiada. Uaktualnij
-    wartość zmniennej \textit{current\_level}. Przejdź do punktu 3. \item Dodaj
+    i sprawdź czy jego jasność nie jest mniejsza od aktualnego poziomu, dodaj
+    go do kolejki priorytetowej i przejdź do następnego kroku. W przeciwnym
+    razie dodaj zawartość zmiennej \textit{current\_pixel} do kolejki, a
+    zmiennej przypisz sąsiada. Uaktualnij wartość zmniennej
+    \textit{current\_level}. Przejdź do punktu 3. \item Dodaj
     \textit{current\_pixel} do komponentu znajdującego się na wierzchu stosu
     komponentów. \item Pobierz piksel z kolejki priorytetowej.  Jeżeli w
-    kolejce nie ma żadnych pikseli, zakończ algorytm. Jeżeli jasność zwróconego
-    piksela jest równa current\_level, przejdź do punktu 4. \item Ponieważ
-    zwrócony piksel znajduje się wyżej (jest jaśniejszy) od przetwarzanego
-    komponentu, istnieje możliwość połączenia dwóch lub więcej komponentów w
-    jeden. W tym celu przetwarzamy wszystkie komponenty na stosie, których
-    poziom jest mniejszy lub równy od obecnego. Dokonuje się tego za pomocą
-    podprocedury \textit{ProcessStack}. Po jej wykonaniu wróć do punktu 4.
-\end{enumerate}
+    kolejce nie ma żadnych pikseli, zakończ algorytm. \item Jeżeli jasność
+    zwróconego piksela jest równa $current\_level$, przejdź do punktu 4. W
+    przeciwnym razie zwrócony piksel znajduje się wyżej (jest jaśniejszy) od
+    przetwarzanego komponentu, istnieje możliwość połączenia dwóch lub więcej
+    komponentów w jeden. W tym celu przetwarzamy wszystkie komponenty na
+    stosie, których poziom jest mniejszy lub równy od obecnego. Dokonuje się
+    tego za pomocą podprocedury \textit{ProcessStack}. Po jej wykonaniu wróć do
+    punktu 4.  \end{enumerate}
 
 Przebieg podprocedury \textit{ProcessStack(new\_pixel\_gray\_level)}
-\begin{enumerate} \item Rozważ komponent z wierzchołka stosu. Ustaw
-    current\_level na mniejszą z wartości: new\_pixel\_gray\_level i poziomu
-    drugiego komponentu na stosie. \item Jeżeli new\_pixel\_gray\_level jest
-    mniejszy od poziomu drugiego komponentu na stosie, pozwól aby komponent na
-    wierzchu stosu miał poziom new\_pixel\_gray\_level i wyjdź z procedury.
-  \item Zdejmij komponent z wierzchu stosu i połącz go z drugim komponentem na
-    stosie z kolei.  Takie połączenie traktuje się jako pojedynczy skok
-    rozmiaru większego z komponentów.  \item Jeżeli new\_pixel\_gray\_level
-    jest większy od poziomu nowego komponentu na wierzchu stosu, przejdź do
-    punktu 1.  \end{enumerate}
+\begin{enumerate} \setcounter{enumi}{7} \item Rozważ komponent z wierzchołka
+    stosu. Ustaw current\_level na mniejszą z wartości: new\_pixel\_gray\_level
+    i poziomu drugiego komponentu na stosie. \item Jeżeli
+    new\_pixel\_gray\_level jest mniejszy od poziomu drugiego komponentu na
+    stosie, pozwól aby komponent na wierzchu stosu miał poziom
+    new\_pixel\_gray\_level i wyjdź z procedury.  \item Zdejmij komponent z
+    wierzchu stosu i połącz go z drugim komponentem na stosie z kolei.  Takie
+    połączenie traktuje się jako pojedynczy skok rozmiaru większego z
+    komponentów.  \item Jeżeli new\_pixel\_gray\_level jest większy od poziomu
+    nowego komponentu na wierzchu stosu, przejdź do punktu 8.  \end{enumerate}
 
 Po każdym wzroście poziomu komponentu o 1, należy sprawdzić czy spełnia on
 kryteria MSER oraz czy jego rozmiar zawiera się w żądanym przedziale. Jeżeli
 tak, zapamiętujemy do osobnej struktury, zawierającej wszystkie MSER-y, sam
 kontur regionu.
+
+\tikzstyle{decision} = [diamond, draw, fill=blue!20,
+text width=2.5em, text badly centered, node distance=2cm, inner sep=0pt]
+\tikzstyle{block} = [rectangle, draw, fill=blue!20,
+text width=3em, text centered, rounded corners, minimum height=2em]
+\tikzstyle{line} = [draw, -latex']
+\tikzstyle{cloud} = [draw, ellipse,fill=red!20, node distance=3cm,
+minimum height=2em]
+
+\bigskip
+\begin{figure}
+\centering
+\begin{tikzpicture}[node distance = 2cm, auto]
+  % Place nodes
+  \node [cloud] (start) {start};
+  \node [block, right of=start] (1) {1};
+  \node [block, right of=1] (2) {2};
+  \node [block, right of=2] (3) {3};
+  \node [decision, below of=3] (4) {4};
+  \node [block, left of=4] (5) {5};
+  \node [decision, left of=5] (6) {6};
+  \node [cloud, left of=6] (stop) {stop};
+  \node [decision, below of=6] (7) {7};
+  \node [block, below of=7] (8) {8};
+  \node [decision, right of=8] (9) {9};
+  \node [block, right of=9] (10) {10};
+  \node [decision, right of=10] (11) {11};
+  % Draw edges
+  \path [line, dashed] (start) -- (1);
+  \path [line] (1) -- (2);
+  \path [line] (2) -- (3);
+  \path [line] (3.south) |- (4.north);
+  \path [line] (4) -- node [near start] {} (5);
+  \path [line] (4.east) -| node [near start] {} (3.east);
+  \path [line] (5) -- (6);
+  \path [line] (6) -- node [near start] {nie} (stop);
+  \path [line] (6) -- node [near start] {tak} (7);
+  \path [line] (7.east) -| node [near start] {tak} (4.south);
+  \path [line] (7) -- node [near start] {nie} (8);
+  \path [line] (9.north) -| node [near start] {tak} (4.south);
+  \path [line] (9) -- node [near start] {nie} (10);
+  \path [line] (10) -- (11);
+  \path [line] (11) |- node [near start] {nie} (4.south);
+  \path [line] (11.south) -| node [near start] {tak} (8.south);
+  \path [line] (8) -- (9);
+\end{tikzpicture}
+  \caption{Diagram przepływu}
+\end{figure}
 
 \subparagraph{Implementacja}
 

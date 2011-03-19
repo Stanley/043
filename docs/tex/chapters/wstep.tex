@@ -2,10 +2,10 @@
 
 Eksponencjalny wzrost popularności urządzeń mobilnych obserwujemy już od wielu
 lat.  Do tej pory jednak, mimo że wiele z nich wyposażone jest w kamerę
-cyfrową, praktycznie żadne z nich nie było w stanie przetwarzać obrazu nawet w
-czasie zbliżonym do rzeczywistego. To zmieni się już niedługo, gdyż zgodnie z
-prawem Moore'a moc obliczeniowa układów scalonych podwaja się co 24 miesiące.
-Wielu programistów nie chce jednak inwestować zbyt dużo energii na pisanie
+cyfrową, praktycznie żadne nie było w stanie przetwarzać obrazu nawet w czasie
+zbliżonym do rzeczywistego. To zmieni się już niedługo, gdyż zgodnie z prawem
+Moore'a moc obliczeniowa układów scalonych podwaja się co 24 miesiące.  Wielu
+programistów nie chce jednak inwestować zbyt dużo energii na pisanie
 skomplikowanych algorytmów na konkretną platformę sprzętową, gdyż udziały w
 rynku nawet największych graczy, zmieniają się bardzo szybko i nie sposób
 przewidzieć która z nich da największe korzyści w przyszłości. Rozwiązania
@@ -28,9 +28,9 @@ Problemem tej pierwszej metody jest duży stopień skomplikowania i zawodność
 podstawowych operacji takich jak wykrywanie krawędzi. Druga metoda zawodzi
 natomiast, np.  przy zmianie kąta widzenia, gdy zmieniają się proporcje
 wymiarów.  W roku 2002, został opublikowany nowatorski algorytm eliminujący
-ełabe punkty obu tych rozwiązań. Stepan Obdrzalek i Jiri Matas w \cite{matas02}
+słabe punkty obu tych rozwiązań. J. Matas i inni, w \cite{matas02}
 proponują łączenie lokalnych cech obrazu (ang. Local Affine Frames on
-Destinguished Regions) i definiują pojęcie MSER (Maksymalnie stabilnych
+Distinguished Regions) i definiują pojęcie MSER (Maksymalnie stabilnych
 regionów ekstremalnych), które posiadają wiele pożądanych cech brakujących we
 wcześniejszych rozwiązaniach.  Kolejnym etapem analizy obrazu jest połączenie
 charakterystycznych regionów (ang. distinguished regions) w pary. Najszybszym
@@ -110,10 +110,10 @@ publikacjami i nowymi algorytmami, a przede wszystkim zastosowaniami
 praktycznymi (w tym: sklejanie zdjęć satelitarnych, tworzenie panoram,
 rekonstrukcja 3D, śledzenie obiektów, kalibracja itp.).
 
-Tinne Tuytelaars1 i Krystian Mikolajczyk w "Local Invariant Feature Detectors:
+Tinne Tuytelaars i Krystian Mikolajczyk w "Local Invariant Feature Detectors:
 A Survey" \cite{survey} rozróżniają trzy kategorie detektorów ze względu na
 ich praktyczne wykorzystanie: \begin{enumerate}[a)] \item Wyszukiwanie
-konkretnych typów cech ze względu na ich jasną interpretacje w danych
+konkretnych typów cech ze względu na ich jasną interpretacje w danym
 kontekście (np. krawędź - droga). \item Wyszukiwanie punktów zaczepnych (tzw.
 zakotwiczeń). Wykorzystywane np. przy śledzeniu. \item Szybkie rozpoznawanie
 scen, obiektów itp. na podstawie statystyk znalezionych cech. \end{enumerate} W
@@ -143,6 +143,6 @@ publikowane na zasadzie wolnej licencji.
 
 \subparagraph{Featurespace \cite{featurespace}}
 
-Kod binarny programu napisanego przez Krystiana Mikolczyk, wykorzystywany przez
+Kod binarny programu napisanego przez Krystiana Mikolczyka, wykorzystywany przez
 niego w wielu publikacjach. Oprócz MSER, implementuje również inne, podobne
 algorytmy.

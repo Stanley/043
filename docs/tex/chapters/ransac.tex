@@ -57,9 +57,9 @@ Układ takich równań w uproszczeniu daje jedno równanie:
 \begin{equation} Af=0\,, \end{equation}
 
 gdzie $f$ jest wektorem zwierającym 9 elementów macierzy $F$. Ponieważ $f$ jest
-zdefiniowana dla dowolnego mnożnika, należy nałożyć dodatkowy warunek, że norma
-$\|f\|$ jest równa 1. Z tego wynika, że do rozwiązania tego układu równań
-wystarczy osiem par punktów.
+zdefiniowana z dokładnością dowolnego mnożnika skali, należy nałożyć dodatkowy
+warunek, że norma $\|f\|$ jest równa 1. Z tego wynika, że do rozwiązania tego
+układu równań wystarczy osiem par punktów.
 
 Zaimplementowany przeze mnie algorytm rozwiązywania układów równań to
 uproszczona metoda Jacobi-ego dla macierzy symetrycznych (gdyż macierz $A^TA$
@@ -73,35 +73,35 @@ fundamentalną o rozmiarze $3 \times 3$.
 
 Algorytm Random Sample Consensus (RANSAC) \cite{ransac} jest estymatorem,
 którego celem jest dopasowanie odpowiedniego modelu do niepewnych
-(doświadczalnych) danych wejściowych, oznaczonych pewnym szumem lub błędem.
+(doświadczalnych) danych wejściowych, obarczonych pewnym szumem lub błędem.
 Jednym z zastosowań tego algorytmu jest budowa geometrii epopolarnej.
-Publikacja "Enhancing RANSAC by generalized model optimization"
-\cite{loransac} pokazuje, że jest możliwe odnajdywanie linii
-epipolarnych na podstawie jedynie trzech par korespondujących regionów, ale
-tylko w połączeniu z takimi metodami parującymi, które dopasowują całe
-kształty, z dokładnością do ich obrotu. Dzięki temu będziemy mogli uzyskać trzy
-pary punktowych korespondencji pomiędzy obrazami, dla każdej pary regionów.
-Szacunkowy model geometrii epipolarnej uzyskujemy losując trzy pary regionów
-korespondujących, z których otrzymamy dziewięć par punktów niezbędnych do
-obliczenia macierzy fundamentalnej $F$. Kolejnym krokiem jest przekształcenie
-wszystkich sparowanych punktów z obrazów $I$ i $I^\prime$ macierzą $F$.
-Algorytm LO-RANSAC \cite{loransac} (ulepszony RANSAC) powtarzamy dla obu
-obrazów (na wejściu podając otrzymany zbiór $\mathcal{U}$ transformowanych
-punktów), który przebiega następująco: \begin{enumerate} \item Losuj $m$ ze
-    wszystkich $N$ punktów w zbiorze $\mathcal{U}$ (gdzie $m$ jest minimalną
-    próbą niezbędną do określenia szukanego modelu; dla linii, $m$ jest równe
-    2). \item Zbuduj model na podstawie wylosowanych danych. Linię definiuje
-    równanie: $y - y_1 = (( y_2 - y_1 ) / ( x_2 - x_1 )) (x - x_1)$.  \item
-    Sprawdź jak dużo punktów nie odbiega od modelu o więcej niż progowy
-    parametr $\Theta$. Punkty leżące w linii (ang. inliners) oznaczamy
-    $\mathcal{I}$, a $I = |\mathcal{I}|$.  \item Jeżeli jest to najlepszy do
-    tej pory szacunek ($I_k > I_j$ dla każdego $j < k$), zapamiętaj go. W
-    przeciwnym razie przejdź do punktu 6. \item Wylosuj stałą liczbę punktów ze
-    zbioru $I_k$ i przeprowadź optymalizację stosując algorytm IRLS
-    (iteratively reweighted least squares). \item Jeżeli prawdopodobieństwo
-    $\eta = (1-P)^k$, znalezienia lepszego modelu w $k$-tej próbie nie jest
-    mniejsze od wartości progowej $\eta_0$ będącej parametrem, wróć do punktu
-    1.  \end{enumerate}
+Publikacja "Enhancing RANSAC by generalized model optimization" \cite{loransac}
+pokazuje, że jest możliwe odnajdywanie linii epipolarnych na podstawie jedynie
+trzech par korespondujących regionów, ale tylko w połączeniu z takimi metodami
+parującymi, które dopasowują całe kształty, z dokładnością do ich obrotu.
+Dzięki temu będziemy mogli uzyskać trzy pary punktowych korespondencji pomiędzy
+obrazami, dla każdej pary regionów.  Szacunkowy model geometrii epipolarnej
+uzyskujemy losując trzy pary regionów korespondujących, z których otrzymamy
+dziewięć par punktów niezbędnych do obliczenia macierzy fundamentalnej $F$.
+Kolejnym krokiem jest przekształcenie wszystkich sparowanych punktów z obrazów
+$I$ i $I^\prime$ macierzą $F$.  Algorytm LO-RANSAC \cite{loransac} (ulepszony
+RANSAC) powtarzamy dla obu obrazów (na wejściu podając otrzymany zbiór
+transformowanych punktów, oznaczany jako $\mathcal{U}$), który przebiega
+następująco: \begin{enumerate} \item Losuj $m$ ze wszystkich $N$ punktów w
+    zbiorze $\mathcal{U}$ (gdzie $m$ jest minimalną próbą niezbędną do
+    określenia szukanego modelu; dla linii, $m$ jest równe 2). \item Zbuduj
+    model na podstawie wylosowanych danych. Linię definiuje równanie: $y - y_1
+    = (( y_2 - y_1 ) / ( x_2 - x_1 )) (x - x_1)$.  \item Sprawdź jak dużo
+    punktów nie odbiega od modelu o więcej niż progowy parametr $\Theta$.
+    Punkty leżące w linii (ang. inliners) oznaczamy $\mathcal{I}$, a $I =
+    |\mathcal{I}|$.  \item Jeżeli jest to najlepszy do tej pory szacunek ($I_k
+    > I_j$ dla każdego $j < k$), zapamiętaj go. W przeciwnym razie przejdź do
+    punktu 6. \item Wylosuj stałą liczbę punktów ze zbioru $I_k$ i przeprowadź
+    optymalizację stosując algorytm IRLS (iteratively reweighted least
+    squares). \item Jeżeli prawdopodobieństwo $\eta = (1-P)^k$, znalezienia
+    lepszego modelu w $k$-tej próbie nie jest mniejsze od wartości progowej
+    $\eta_0$ będącej parametrem, wróć do punktu 1. W przeciwnym razie zwróć
+    aktualny model. \end{enumerate}
 
 Przyjmuje się, że para regionów jest spójna z wyznaczonym modelem, jeżeli
 wszystkie jej trzy punkty są spójne. Prawdopodobieństwo $P$ wynosi: 
@@ -115,19 +115,30 @@ Sama macierz fundamentalna nie wystarczy do wyznaczenia w przestrzeni ani
 położenia kamery, ani punktów korespondującym punktom na płaszczyźnie. Aby
 jednoznacznie określić punkty w przestrzeni, konieczne są punkty zaczepne.
 Według autorów "Stereo from Uncalibrated Cameras" \cite{stereo} może być to
-dowolna para macierzy położenia kamer (ang. camera matrices), która jest
-zdefiniowana przez:
+dowolna para macierzy położenia kamer $P_1$, $P_2$ (ang. camera matrices),
+która jest zdefiniowana przez:
 
 \begin{equation}
-  P_1 = (I\; |\; 0);\quad P_2 = (U diag(r,s,\gamma) E V^T\; |\; U(0,0,\gamma)^T).
+  P_1 = \begin{pmatrix} 
+    1 & 0 & 0 & 0 \\
+    0 & 1 & 0 & 0 \\
+    0 & 0 & 1 & 0
+  \end{pmatrix}
+;\quad P_2 = (U \begin{pmatrix} 
+    r & 0 & 0 \\
+    0 & s & 0 \\
+    0 & 0 & \gamma
+  \end{pmatrix} E V^T\; |\; U(0,0,\gamma)^T).
 \end{equation}
 
 W celu ich znalezienia, konieczne jest dokonanie rozkładu według wartości
 osobliwych (ang. singular value decomposition) macierzy fundamentalnej $F$, w
-formie $F = UDV^T$, gdzie $D$ jest macierzą diagonalną $diag(r,s,q)$. Macierze
-$P$ nie mają na celu dokładnego określenia rzeczywistego położenia kamer w
-przestrzeni, a jedynie skojarzenie ich położenia z trójwymiarową transformacją
-projekcji na płaszczyźnie.
+formie $F = UDV^T$, gdzie $D$ jest macierzą diagonalną $diag(r,s,0)$. Ponieważ
+w praktyce najmniejsza wartość własna $F$ nie będzie równa dokładnie 0, należy
+tą wartość wymusić (po to, aby norma euklidesowa macierzy wynosiła wymagane 2).
+Macierze $P$ nie mają na celu dokładnego określenia rzeczywistego położenia
+kamer w przestrzeni, a jedynie skojarzenie ich położenia z trójwymiarową
+transformacją projekcji na płaszczyźnie.
 
 Zgodnie z \cite{stereo} macierz $F$ można również rozpisać w następujący sposób:
 
@@ -148,7 +159,8 @@ gdzie
     0 & 0 & 0
   \end{pmatrix},
 \end{equation}
-a $R$ jest macierzą rotacji.
+$R$ jest macierzą rotacji, a $\alpha$ niezerową wartością (zgodnie z
+\cite{stereo} zawartą między $r$ i $s$).
 
 \section{Odnajdywanie punktów w przestrzeni trójwymiarowej}
 
