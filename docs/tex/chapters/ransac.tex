@@ -52,7 +52,7 @@ szukanej macierzy fundamentalnej $F$:
   F_{12} + vv^\prime F_{22} + vF_{32} + u^\prime F_{13} + v^\prime F_{23} +
   F_{33} = 0\,.  \end{equation}
 
-Układ takich równań w uproszczeniu daje jedno równanie: 
+Układ takich równań ma prostą postać w zapisie macierzowym:
 
 \begin{equation} Af=0\,, \end{equation}
 
@@ -93,15 +93,15 @@ następująco: \begin{enumerate} \item Losuj $m$ ze wszystkich $N$ punktów w
     model na podstawie wylosowanych danych. Linię definiuje równanie: $y - y_1
     = (( y_2 - y_1 ) / ( x_2 - x_1 )) (x - x_1)$.  \item Sprawdź jak dużo
     punktów nie odbiega od modelu o więcej niż progowy parametr $\Theta$.
-    Punkty leżące w linii (ang. inliners) oznaczamy $\mathcal{I}$, a $I =
-    |\mathcal{I}|$.  \item Jeżeli jest to najlepszy do tej pory szacunek ($I_k
-    > I_j$ dla każdego $j < k$), zapamiętaj go. W przeciwnym razie przejdź do
-    punktu 6. \item Wylosuj stałą liczbę punktów ze zbioru $I_k$ i przeprowadź
-    optymalizację stosując algorytm IRLS (iteratively reweighted least
-    squares). \item Jeżeli prawdopodobieństwo $\eta = (1-P)^k$, znalezienia
-    lepszego modelu w $k$-tej próbie nie jest mniejsze od wartości progowej
-    $\eta_0$ będącej parametrem, wróć do punktu 1. W przeciwnym razie zwróć
-    aktualny model. \end{enumerate}
+    Punkty leżące w linii (ang. inliners) zaliczamy do zbioru $\mathcal{I}$, a
+    ich liczba to $I = |\mathcal{I}|$.  \item Jeżeli jest to najlepszy do tej
+    pory szacunek ($I_k > I_j$ dla każdego $j < k$), zapamiętaj go. W
+    przeciwnym razie przejdź do punktu 6. \item Wylosuj stałą liczbę punktów ze
+    zbioru $I_k$ i przeprowadź optymalizację stosując algorytm IRLS
+    (iteratively reweighted least squares). \item Jeżeli prawdopodobieństwo
+    $\eta = (1-P)^k$, znalezienia lepszego modelu w $k$-tej próbie nie jest
+    mniejsze od wartości progowej $\eta_0$ będącej parametrem, wróć do punktu
+    1. W przeciwnym razie zwróć aktualny model. \end{enumerate}
 
 Przyjmuje się, że para regionów jest spójna z wyznaczonym modelem, jeżeli
 wszystkie jej trzy punkty są spójne. Prawdopodobieństwo $P$ wynosi: 
@@ -135,10 +135,10 @@ W celu ich znalezienia, konieczne jest dokonanie rozkładu według wartości
 osobliwych (ang. singular value decomposition) macierzy fundamentalnej $F$, w
 formie $F = UDV^T$, gdzie $D$ jest macierzą diagonalną $diag(r,s,0)$. Ponieważ
 w praktyce najmniejsza wartość własna $F$ nie będzie równa dokładnie 0, należy
-tą wartość wymusić (po to, aby norma euklidesowa macierzy wynosiła wymagane 2).
-Macierze $P$ nie mają na celu dokładnego określenia rzeczywistego położenia
-kamer w przestrzeni, a jedynie skojarzenie ich położenia z trójwymiarową
-transformacją projekcji na płaszczyźnie.
+tę wartość wymusić (po to, aby norma Euklidesowa była jak najbliższa $F$, a
+jej rząd wynosił 2).  Macierze $P$ nie mają na celu dokładnego określenia
+rzeczywistego położenia kamer w przestrzeni, a jedynie skojarzenie ich
+położenia z trójwymiarową transformacją projekcji na płaszczyźnie.
 
 Zgodnie z \cite{stereo} macierz $F$ można również rozpisać w następujący sposób:
 
@@ -159,7 +159,7 @@ gdzie
     0 & 0 & 0
   \end{pmatrix},
 \end{equation}
-$R$ jest macierzą rotacji, a $\alpha$ niezerową wartością (zgodnie z
+$R$ jest macierzą rotacji, a $\gamma$ niezerową wartością (zgodnie z
 \cite{stereo} zawartą między $r$ i $s$).
 
 \section{Odnajdywanie punktów w przestrzeni trójwymiarowej}

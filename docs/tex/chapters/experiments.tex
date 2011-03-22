@@ -11,13 +11,12 @@ powtórzony wiele razy, najkorzystniejsze wyniki znajdują się na wykresie \ref
 
 \begin{figure}[h!] \centering \includegraphics{images/mser.pdf} \caption{Czas
   wykonania pojedynczego przejścia algorytmu MSER+ (od koloru czarnego do
-  białego). Linią przerywaną został oznaczony obraz zwierający jednolity kolor
-  (trywialny przypadek), linią ciągłą standardowe zdjęcie z aparatu. Obraz
-  zawierający losowe piksele (złośliwy przypadek; wymaga utworzenia większego
-  stosu w pamięci) nie został naniesiony na wykres z powodu zaburzenia skali
-  (wykazał niską szybkość ok. pół megapiksela na sekundę). Użyte parametry:
-  rozmiar regionu od 50 do 500 pikseli, delta równa 10.} \label{mser}
-\end{figure}
+  białego). Dolna linia przerywana powstała po przetworzeniu obrazu o
+  jednolitym kolorze (trywialny przypadek), linią ciągłą standardowe zdjęcie z
+  aparatu. Obraz zawierający losowe piksele (złośliwy przypadek; wymaga
+  utworzenia większego stosu w pamięci) reprezentuje górna linia przerywana.
+  Użyte parametry: rozmiar regionu od 50 do 500 pikseli, delta równa 10.}
+  \label{mser} \end{figure}
 
 Dla porównania, autorzy \cite{Nister_Stewenius_2008} uzyskali wydajność bliską
 5 megapikseli na sekundę. Inne, wcześniejsze implementacje są do dwóch razy
