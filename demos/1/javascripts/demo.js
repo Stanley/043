@@ -69,7 +69,7 @@ function main(){
           d[pos+3] = 255;
         }
 
-        // Epopolar lines canvas
+        // Epipolar lines canvas
         var epipolarConetext = [];
         var epipolar = [
           document.createElement('canvas'),
@@ -189,7 +189,7 @@ function main(){
         var j = pairs.length;
 
         // Calculate centroids
-        centroids = [
+       var centroids = [
           centroid_a.map(function(x){ return Math.round(x/j) }),
           centroid_b.map(function(x){ return Math.round(x/j) })
         ];
